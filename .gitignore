@@ -23,10 +23,6 @@ tmp/
 .env
 .env.*
 !.env.example
-admin-backend/src/main/resources/application.yml
-travel-backend/application.yml
-travel-backend/application-dev.yml
-travel-backend/application-prod.yml
 ai-travel-backend/admin-service/src/main/resources/application.yml
 ai-travel-backend/travel-service/src/main/resources/application.yml
 ai-travel-backend/travel-service/src/main/resources/application-dev.yml

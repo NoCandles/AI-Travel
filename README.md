@@ -53,13 +53,11 @@ AI-Travel/
 │   └── admin-service/    # 管理后台服务，默认端口 8081
 ├── admin-frontend/       # React + Vite 管理后台
 ├── sql/                  # 全量初始化、种子数据和增量迁移脚本
-├── travel-backend/       # 早期单体旅行后端（兼容/参考）
-├── admin-backend/        # 早期独立管理后端（兼容/参考）
 ├── design-audit/         # 设计审查截图
 └── 部署指南.md            # 微信云托管部署说明
 ```
 
-日常开发建议以 `ai-travel-backend` 为后端主线。`travel-backend` 与 `admin-backend` 保留了拆分前的单体版本，API 前缀和部分配置与多模块版本不同。
+后端统一以 `ai-travel-backend` 为唯一开发主线，用户端和管理端通过 `common` 模块共享公共能力。
 
 ## 小程序页面
 
