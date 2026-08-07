@@ -1,0 +1,97 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-left">
+      <text class="header-title">我的行程</text>
+      <text class="header-subtitle">规划你的每一次精彩旅程</text>
+      <view class="header-indicator"></view>
+    </view>
+  </view>
+
+  <!-- AI生成入口 Banner -->
+ 
+
+  <!-- ===== 当前行程入口（进行中） ===== -->
+  <view class="ongoing-banner" wx:if="{{stats.ongoing > 0}}" bindtap="goToCurrentTrip">
+    <view class="ongoing-left">
+      <image class="ongoing-icon" src="/images/icons/location-pin.svg" mode="aspectFit" />
+      <view class="ongoing-text">
+        <text class="ongoing-title">当前进行中</text>
+        <text class="ongoing-count">{{stats.ongoing}} 个行程正在进行</text>
+      </view>
+    </view>
+    <view class="ongoing-right">
+      <text class="ongoing-action">查看进度</text>
+      <text class="ongoing-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 行程分类Tab -->
+  <view class="trip-tabs">
+    <view class="trip-tab {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-tab="0">
+      <text>全部</text>
+      <text class="tab-count">{{stats.all || 0}}</text>
+    </view>
+    <view class="trip-tab {{currentTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-tab="1">
+      <text>进行中</text>
+      <text class="tab-count">{{stats.ongoing || 0}}</text>
+    </view>
+    <view class="trip-tab {{currentTab === 2 ? 'active' : ''}}" bindtap="switchTab" data-tab="2">
+      <text>已完成</text>
+      <text class="tab-count">{{stats.completed || 0}}</text>
+    </view>
+  </view>
+
+  <!-- 行程列表 -->
+  <view class="trip-section">
+    <!-- 行程卡片 -->
+    <view class="trip-card" wx:for="{{filteredTrips || []}}" wx:key="id" bindtap="viewTripDetail" data-id="{{item.id}}">
+      <image class="trip-image" src="{{item.coverImage || '/images/default-trip.jpg'}}" mode="aspectFill"></image>
+      <view class="trip-content">
+        <view class="trip-top">
+          <view class="trip-header">
+            <text class="trip-title">{{item.title}}</text>
+            <view class="trip-header-right">
+              <view class="trip-mode mode-{{item.travelMode}}"><image src="{{item.travelModeMeta.iconPath}}" mode="aspectFit" /><text>{{item.travelModeMeta.label}}</text></view>
+              <view class="trip-status {{item.status}}"><text>{{item.statusText}}</text></view>
+            </view>
+          </view>
+          <view class="trip-meta">
+            <view class="meta-item">
+              <image class="meta-icon" src="/images/icons/location-pin.svg"/>
+              <text>{{item.destination}}</text>
+            </view>
+            <view class="meta-item">
+              <image class="meta-icon" src="/images/icons/calendar.svg" mode="aspectFill"/>
+              <text>{{item.days}}天</text>
+            </view>
+            <view class="meta-item" wx:if="{{item.date}}">
+              <image class="meta-icon" src="/images/icons/time.svg" mode="aspectFill"/>
+              <text>{{item.date}}</text>
+            </view>
+          </view>
+          <view class="trip-tags">
+            <text class="tag" wx:for="{{item.tags || []}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+        <view class="trip-actions">
+          <button class="act-btn edit" catchtap="editTrip" data-id="{{item.id}}"><image class="act-icon-sm" src="/images/icons/edit.svg" mode="aspectFill"/> 编辑</button>
+          <button class="act-btn start" wx:if="{{item.status === 'SAVED'}}" catchtap="startTrip" data-id="{{item.id}}"><image class="act-icon-sm" src="/images/icons/nav.svg" mode="aspectFill"/> 出发</button>
+          <button class="act-btn finish" wx:if="{{item.status === 'ONGOING'}}" catchtap="completeTrip" data-id="{{item.id}}"><image class="act-icon-sm" src="/images/icons/check.svg" mode="aspectFill"/> 结束</button>
+          <button class="act-btn share" open-type="share" data-id="{{item.id}}"><image class="act-icon-sm" src="/images/icons/share.svg" mode="aspectFill"/> 分享</button>
+          <button class="act-btn del" catchtap="deleteTrip" data-id="{{item.id}}"><image class="act-icon-sm" src="/images/icons/delete.svg" mode="aspectFill"/> 删除</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{filteredTrips.length === 0}}">
+      <view class="empty-icon"><image class="empty-icon-img" src="/images/icons/clipboard-list.svg" mode="aspectFit" /></view>
+      <text class="empty-title">暂无行程</text>
+      <text class="empty-subtitle">快去创建你的第一个行程吧</text>
+      <button class="btn-create" bindtap="goToAIGenerate">生成行程</button>
+    </view>
+  </view>
+  <chat-fab />
+</view>

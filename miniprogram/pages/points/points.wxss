@@ -1,0 +1,360 @@
+/* ========================================
+   积分中心 — 所有 Token 由 variables.wxss 统一提供
+   ======================================== */
+
+.points-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: var(--space-page-top) var(--space-page-x);
+}
+
+/* ---- 深色模式页面背景（强制覆盖，规避跨页面 CSS 变量级联不可靠） ---- */
+.theme-dark.points-page,
+.points-page.theme-dark {
+  background: #111318;
+  color: var(--color-text);
+}
+
+/* ---- 未登录 ---- */
+.login-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 60rpx;
+  text-align: center;
+}
+
+.login-icon {
+  width: 88rpx;
+  height: 88rpx;
+  margin-bottom: 32rpx;
+  opacity: .86;
+}
+
+.login-title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 12rpx;
+}
+
+.login-desc {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-muted);
+  margin-bottom: 40rpx;
+}
+
+.login-btn {
+  width: 360rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 40rpx;
+  border: none;
+  padding: 0;
+}
+
+.login-btn::after {
+  border: none;
+}
+
+/* ---- 积分卡片 ---- */
+.points-card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 40rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--elevation-1);
+  border: 1rpx solid var(--color-border);
+}
+
+.points-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
+.level-badge {
+  width: 80rpx;
+  height: 80rpx;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-right: 20rpx;
+}
+
+.level-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.points-body {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.points-label {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-muted);
+  margin-bottom: 8rpx;
+}
+
+.points-value {
+  display: block;
+  font-size: 72rpx;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.points-details {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 32rpx;
+  border-top: 1rpx solid var(--color-border);
+}
+
+.detail-item {
+  text-align: center;
+}
+
+.detail-value {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 8rpx;
+}
+
+.detail-label {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-muted);
+}
+
+/* ---- 签到按钮 ---- */
+.sign-in-section {
+  margin-bottom: 24rpx;
+}
+
+.sign-in-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sign-in-btn::after {
+  border: none;
+}
+
+.sign-in-btn.disabled {
+  background: var(--color-border);
+  color: var(--color-muted);
+}
+
+/* ---- 赚取积分 ---- */
+.earn-section {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--elevation-1);
+  border: 1rpx solid var(--color-border);
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 16rpx;
+}
+
+.earn-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.earn-item:last-child {
+  border-bottom: none;
+}
+
+.earn-left {
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.earn-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 8rpx;
+}
+
+.earn-desc {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-muted);
+}
+
+.earn-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+
+.earn-points {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.earn-btn {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 8rpx 24rpx;
+  border-radius: 20rpx;
+  white-space: nowrap;
+}
+
+/* ---- 积分记录 ---- */
+.records-section {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 28rpx;
+  box-shadow: var(--elevation-1);
+  border: 1rpx solid var(--color-border);
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-info {
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.record-desc {
+  display: block;
+  font-size: 28rpx;
+  color: var(--color-text);
+  margin-bottom: 8rpx;
+}
+
+.record-time {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-muted);
+}
+
+.record-value {
+  font-size: 30rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.record-value.earn {
+  color: var(--color-primary);
+}
+
+.record-value.spend {
+  color: var(--color-accent);
+}
+
+.no-records {
+  text-align: center;
+  padding: 60rpx 0;
+  color: var(--color-muted);
+  font-size: 28rpx;
+}
+
+/* ======== 暗色主题（全局 Token 统一管理） ======== */
+
+/* ---- 卡片 / 区块背景 ---- */
+.theme-dark .points-card,
+.theme-dark .earn-section,
+.theme-dark .records-section {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+/* ---- 主文字（白 / 亮色） ---- */
+.theme-dark .login-title,
+.theme-dark .level-title,
+.theme-dark .detail-value,
+.theme-dark .section-title,
+.theme-dark .earn-name,
+.theme-dark .record-desc {
+  color: var(--color-text);
+}
+
+/* ---- 强调色文字（品牌色 / 辅助色） ---- */
+.theme-dark .points-value,
+.theme-dark .earn-points,
+.theme-dark .record-value.earn {
+  color: var(--color-brand);
+}
+
+.theme-dark .record-value.spend {
+  color: var(--color-accent);
+}
+
+/* ---- 次级文字（灰） ---- */
+.theme-dark .login-desc,
+.theme-dark .points-label,
+.theme-dark .detail-label,
+.theme-dark .earn-desc,
+.theme-dark .record-time,
+.theme-dark .no-records {
+  color: var(--color-text-muted);
+}
+
+/* ---- 签到按钮（已签到态） ---- */
+.theme-dark .sign-in-btn.disabled {
+  background: var(--color-surface-input);
+  color: var(--color-text-muted);
+}
+
+/* ---- 分割线 ---- */
+.theme-dark .points-details,
+.theme-dark .earn-item,
+.theme-dark .record-item {
+  border-top-color: var(--color-border);
+  border-bottom-color: var(--color-border);
+}

@@ -1,0 +1,345 @@
+/* ========================================
+   足迹页面 — 地图 + 列表双视图
+   ======================================== */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-surface-alt);
+  padding: var(--space-page-top) var(--space-page-x) 32rpx;
+  box-sizing: border-box;
+}
+
+/* ========== 统计卡片 ========== */
+.stats-card {
+  background: linear-gradient(135deg, #2EC4B6 0%, #1EA88E 100%);
+  border-radius: 28rpx;
+  padding: 32rpx 24rpx 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 24rpx var(--color-brand-30);
+}
+
+.stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-num {
+  font-size: 52rpx;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 6rpx;
+}
+
+.stat-divider {
+  width: 2rpx;
+  height: 56rpx;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.stats-sub {
+  text-align: center;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.65);
+  margin-top: 16rpx;
+  letter-spacing: 2rpx;
+}
+
+/* ========== Tab 栏 ========== */
+.tab-bar {
+  display: flex;
+  background: var(--color-surface);
+  border-radius: 20rpx;
+  padding: 6rpx;
+  margin-bottom: 24rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  border-radius: 16rpx;
+  transition: all 0.25s;
+}
+
+.tab-item.active {
+  background: var(--color-brand);
+  color: #fff;
+  box-shadow: 0 4rpx 12rpx var(--color-brand-30);
+}
+
+/* ========== 加载 ========== */
+.loading-box {
+  display: flex;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.loading-spinner {
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid var(--color-border);
+  border-top-color: var(--color-brand);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== 地图区域 ========== */
+.map-section {
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.footprint-map {
+  width: 100%;
+  height: 760rpx;
+}
+
+/* 图例 */
+.map-legend {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  gap: 24rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.legend-dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+}
+
+.legend-area {
+  width: 28rpx;
+  height: 20rpx;
+  border-radius: 4rpx;
+}
+
+.legend-area.visited {
+  background: #2EC4B670;
+  border: 2rpx solid #2EC4B6CC;
+}
+
+.legend-dot.unvisited {
+  background: #d0d5dd;
+}
+
+.legend-text {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+.legend-hint {
+  font-size: 20rpx;
+  color: var(--color-text-muted);
+  opacity: 0.6;
+  margin-left: auto;
+}
+
+/* ========== 列表区域 ========== */
+.list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.list-card {
+  display: flex;
+  align-items: center;
+  background: var(--color-surface);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  position: relative;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
+}
+
+.list-rank {
+  position: absolute;
+  top: 12rpx;
+  right: 16rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: var(--color-brand);
+  opacity: 0.6;
+}
+
+.list-icon-wrap {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-brand-light), var(--color-surface-alt));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.list-icon {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.list-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  display: block;
+}
+
+.list-count {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  margin-top: 4rpx;
+  display: block;
+}
+
+.list-bar-wrap {
+  width: 100rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: var(--color-surface-alt);
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  overflow: hidden;
+}
+
+.list-bar {
+  height: 100%;
+  border-radius: 4rpx;
+  background: linear-gradient(90deg, var(--color-brand), #1EA88E);
+  min-width: 8rpx;
+}
+
+/* ========== 空状态 ========== */
+.empty-page,
+.empty-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 30rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-icon-img {
+  width: 92rpx;
+  height: 92rpx;
+  margin-bottom: 20rpx;
+  opacity: .82;
+}
+
+.empty-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 10rpx;
+}
+
+.empty-desc {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
+
+/* ========== 深色模式 ========== */
+.theme-dark.page,
+.page.theme-dark {
+  background: #111318;
+}
+
+.theme-dark .tab-bar {
+  background: #1a1d26;
+}
+
+.theme-dark .tab-item {
+  color: #8b8fa3;
+}
+
+.theme-dark .tab-item.active {
+  background: #2EC4B6;
+  color: #fff;
+}
+
+.theme-dark .map-section {
+  background: #1a1d26;
+}
+
+.theme-dark .list-card {
+  background: #1a1d26;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.theme-dark .list-name {
+  color: #e4e6eb;
+}
+
+.theme-dark .list-icon-wrap {
+  background: linear-gradient(135deg, #1a2d2a, #1a3530);
+}
+
+.theme-dark .list-bar-wrap {
+  background: #252830;
+}
+
+.theme-dark .list-rank {
+  color: #2EC4B6;
+}
+
+.theme-dark .legend-text,
+.theme-dark .legend-hint {
+  color: #8b8fa3;
+}
+
+.theme-dark .legend-area.visited {
+  background: #2EC4B670;
+  border-color: #2EC4B6CC;
+}
+
+.theme-dark .legend-dot.unvisited {
+  background: #555;
+}
+
+.theme-dark .empty-title {
+  color: #e4e6eb;
+}
+
+.theme-dark .loading-spinner {
+  border-color: #2a2d35;
+  border-top-color: #2EC4B6;
+}

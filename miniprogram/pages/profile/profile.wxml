@@ -1,0 +1,192 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="profile-header">
+    <view class="cover-area {{coverImage ? '' : 'cover-default'}}" bindtap="onChangeCover">
+      <image wx:if="{{coverImage}}" class="cover-img" src="{{coverImage}}" mode="aspectFill"/>
+      <view class="cover-overlay"></view>
+      <view class="cover-settings-btn" catchtap="goSettings">
+        <image class="cover-settings-icon" src="/images/icons/menu.svg" mode="aspectFit"/>
+      </view>
+    </view>
+
+    <view class="profile-info">
+      <view class="profile-top-row">
+        <view class="avatar-wrap">
+          <image wx:if="{{isLoggedIn && userInfo.avatarUrl}}" class="avatar-img" src="{{userInfo.avatarUrl}}" mode="aspectFill"/>
+          <image wx:else class="avatar-img" src="/images/icons/user.svg" mode="aspectFill"/>
+        </view>
+        <view class="profile-right">
+          <view class="name-row">
+            <text class="profile-name">{{isLoggedIn ? (userInfo.nickName || '旅行家') : '未登录'}}</text>
+            <view class="btn-edit-profile" wx:if="{{isLoggedIn}}" bindtap="editProfile">编辑资料</view>
+          </view>
+          <view class="profile-id-row" wx:if="{{isLoggedIn}}">
+            <text class="profile-id">拾路派号：{{shortId || '---'}}</text>
+          </view>
+          <view class="profile-signature" wx:if="{{isLoggedIn && userProfile.signature}}">
+            <text class="signature-text">{{userProfile.signature}}</text>
+          </view>
+          <view class="profile-tags" wx:if="{{isLoggedIn}}">
+            <view class="profile-tag" wx:if="{{userProfile.city || userProfile.province}}">
+              <image class="tag-icon" src="/images/icons/location-pin.svg" mode="aspectFit"/>
+              <text>{{userProfile.city || userProfile.province}}</text>
+            </view>
+            <view class="profile-tag" wx:if="{{userProfile.gender === 1}}"><text class="gender-male">男</text></view>
+            <view class="profile-tag" wx:if="{{userProfile.gender === 2}}"><text class="gender-female">女</text></view>
+          </view>
+        </view>
+      </view>
+
+      <view class="profile-stats" wx:if="{{isLoggedIn}}">
+        <view class="profile-stat-item">
+          <text class="profile-stat-num">{{stats.totalLikes || 0}}</text>
+          <text class="profile-stat-label">获赞</text>
+        </view>
+        <view class="profile-stat-item">
+          <text class="profile-stat-num">{{stats.favoriteCount || 0}}</text>
+          <text class="profile-stat-label">收藏</text>
+        </view>
+        <view class="profile-stat-item" bindtap="viewFollowing">
+          <text class="profile-stat-num">{{stats.followingCount || 0}}</text>
+          <text class="profile-stat-label">关注</text>
+        </view>
+        <view class="profile-stat-item" bindtap="viewFollowers">
+          <text class="profile-stat-num">{{stats.followerCount || 0}}</text>
+          <text class="profile-stat-label">粉丝</text>
+        </view>
+      </view>
+
+      <button class="btn-login-cover" wx:if="{{!isLoggedIn}}" bindtap="goLogin">登录 / 注册</button>
+    </view>
+  </view>
+
+  <view class="points-entry" wx:if="{{pointsEnabled && isLoggedIn}}" bindtap="goPointsCenter">
+    <view class="points-entry-left">
+      <view class="points-icon-wrap"><image class="points-icon-img" src="/images/icons/star.svg" mode="aspectFit" /></view>
+      <view class="points-entry-info">
+        <text class="points-entry-title">积分中心</text>
+        <text class="points-entry-desc">L{{levelInfo.level || 1}} {{levelInfo.title || '旅游新手'}}</text>
+      </view>
+    </view>
+    <view class="points-entry-right">
+      <text class="points-num">{{pointsInfo.availablePoints || 0}} 积分</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <view class="content-shell" wx:if="{{isLoggedIn}}">
+    <view class="content-tabs">
+      <view
+        wx:for="{{contentTabs}}"
+        wx:key="key"
+        class="content-tab {{activeContentTab === item.key ? 'active' : ''}}"
+        data-tab="{{item.key}}"
+        bindtap="switchContentTab"
+      >
+        <text>{{item.text}}</text>
+      </view>
+    </view>
+
+    <view class="route-grid" wx:if="{{activeContentTab === 'favorites'}}">
+      <view class="route-card" wx:for="{{favoriteRoutes}}" wx:key="detailId" data-id="{{item.detailId}}" bindtap="viewRouteDetail">
+        <image class="route-cover" src="{{item.coverImage}}" mode="aspectFill"/>
+        <view class="route-body">
+          <text class="route-title">{{item.title}}</text>
+          <view class="route-meta">
+            <image class="route-meta-icon" src="/images/icons/location-pin.svg" mode="aspectFit"/>
+            <text>{{item.location}}</text>
+          </view>
+          <view class="route-footer">
+            <view class="route-author">
+              <image class="route-avatar" src="{{item.avatar}}" mode="aspectFill"/>
+              <text>{{item.nickname}}</text>
+            </view>
+            <button
+              class="route-share"
+              open-type="share"
+              data-id="{{item.detailId}}"
+              data-title="{{item.title}}"
+              data-cover="{{item.coverImage}}"
+              catchtap="noop"
+            >分享</button>
+          </view>
+        </view>
+      </view>
+      <view class="profile-empty" wx:if="{{!contentLoading && favoriteRoutes.length === 0}}">
+        <image class="profile-empty-icon" src="/images/icons/star.svg" mode="aspectFit"/>
+        <text class="profile-empty-title">还没有收藏路线</text>
+        <text class="profile-empty-desc">看到心动路线时点收藏，会沉淀在这里</text>
+      </view>
+    </view>
+
+    <view class="route-grid" wx:if="{{activeContentTab === 'liked'}}">
+      <view class="route-card" wx:for="{{likedRoutes}}" wx:key="detailId" data-id="{{item.detailId}}" bindtap="viewRouteDetail">
+        <image class="route-cover" src="{{item.coverImage}}" mode="aspectFill"/>
+        <view class="route-body">
+          <text class="route-title">{{item.title}}</text>
+          <view class="route-meta">
+            <image class="route-meta-icon" src="/images/icons/location-pin.svg" mode="aspectFit"/>
+            <text>{{item.location}}</text>
+          </view>
+          <view class="route-footer">
+            <view class="route-author">
+              <image class="route-avatar" src="{{item.avatar}}" mode="aspectFill"/>
+              <text>{{item.nickname}}</text>
+            </view>
+            <button
+              class="route-share"
+              open-type="share"
+              data-id="{{item.detailId}}"
+              data-title="{{item.title}}"
+              data-cover="{{item.coverImage}}"
+              catchtap="noop"
+            >分享</button>
+          </view>
+        </view>
+      </view>
+      <view class="profile-empty" wx:if="{{!contentLoading && likedRoutes.length === 0}}">
+        <image class="profile-empty-icon" src="/images/icons/love.svg" mode="aspectFit"/>
+        <text class="profile-empty-title">还没有喜欢的路线</text>
+        <text class="profile-empty-desc">给喜欢的公开路线点个赞，会出现在这里</text>
+      </view>
+    </view>
+
+    <view class="visited-panel" wx:if="{{activeContentTab === 'visited'}}">
+      <view class="visited-summary">
+        <view class="visited-summary-item">
+          <text class="visited-num">{{visitedSummary.totalCities || 0}}</text>
+          <text class="visited-label">去过城市</text>
+        </view>
+        <view class="visited-divider"></view>
+        <view class="visited-summary-item">
+          <text class="visited-num">{{visitedSummary.totalTrips || 0}}</text>
+          <text class="visited-label">旅行次数</text>
+        </view>
+      </view>
+      <view class="visited-map-card" wx:if="{{!contentLoading && visitedCities.length > 0}}">
+        <map
+          id="profile-visited-map"
+          class="visited-map"
+          latitude="{{mapLatitude}}"
+          longitude="{{mapLongitude}}"
+          scale="{{mapScale}}"
+          polygons="{{polygons}}"
+          show-location="{{false}}"
+          enable-overlooking="{{false}}"
+          enable-rotate="{{false}}"
+        ></map>
+        <view class="visited-map-legend">
+          <view class="legend-area"></view>
+          <text>高亮区域为去过的城市</text>
+        </view>
+      </view>
+      <view class="profile-empty" wx:if="{{!contentLoading && visitedCities.length === 0}}">
+        <image class="profile-empty-icon" src="/images/icons/footprints.svg" mode="aspectFit"/>
+        <text class="profile-empty-title">还没有去过记录</text>
+        <text class="profile-empty-desc">完成一段行程后，这里会亮起你的城市</text>
+      </view>
+    </view>
+
+    <view class="content-loading" wx:if="{{contentLoading}}">加载中...</view>
+  </view>
+  <chat-fab />
+</view>

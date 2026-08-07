@@ -1,0 +1,176 @@
+<view class="map-page {{darkMode ? 'theme-dark' : ''}}">
+  <!-- 地图区域 -->
+  <map
+    id="map"
+    class="map"
+    style="height: {{panelCollapsed ? 'calc(100vh - 380rpx)' : '45vh'}};"
+    longitude="{{mapData.longitude}}"
+    latitude="{{mapData.latitude}}"
+    scale="{{mapData.scale}}"
+    markers="{{markers}}"
+    polyline="{{polylines}}"
+    show-location="{{true}}"
+    enable-traffic="{{false}}"
+    bindmarkertap="onMarkerTap"
+    bindregionchange="onRegionChange"
+  >
+    <!-- 顶部标题栏 -->
+    <cover-view class="map-top-bar">
+      <cover-view class="map-location-card" bindtap="switchLocation">
+        <cover-image class="map-loc-icon" src="/images/icons/location.svg"></cover-image>
+        <cover-view class="map-loc-text">{{currentLocation || '定位中...'}}</cover-view>
+        <cover-image class="map-loc-arrow" src="/images/icons/arrow-down.svg"></cover-image>
+      </cover-view>
+      <cover-view class="map-weather-card" wx:if="{{weather.temp}}">
+        <cover-image class="map-weather-icon" src="{{weather.iconPath || '/images/icons/scenic.svg'}}"></cover-image>
+        <cover-view class="map-weather-text">{{weather.temp}}℃ {{weather.desc}}</cover-view>
+      </cover-view>
+    </cover-view>
+
+    <!-- 统计卡片组件 -->
+    <route-stats-card
+      visible="{{routeLoaded || routeStats.distance > 0}}"
+      distance="{{routeStats.distance}}"
+      duration="{{routeStats.duration}}"
+      pointCount="{{routeStats.points.length}}"
+      totalPaths="{{totalPaths}}"
+      currentPathIndex="{{currentPathIndex}}"
+      bind:switchpath="togglePathPicker"
+    />
+
+    <!-- 路线选择弹窗组件 -->
+    <path-picker
+      visible="{{showPathPicker && totalPaths > 1}}"
+      paths="{{allPaths}}"
+      currentIndex="{{currentPathIndex}}"
+      bind:close="togglePathPicker"
+      bind:select="switchPath"
+    />
+
+    <!-- 右侧控制按钮组 -->
+    <cover-view class="map-right-controls">
+      <cover-view class="rctrl-btn" bindtap="recenterMap">
+        <cover-view class="rctrl-icon">⊕</cover-view>
+        <cover-view class="rctrl-label">定位</cover-view>
+      </cover-view>
+      <cover-view class="rctrl-divider"></cover-view>
+      <cover-view class="rctrl-btn {{editMode ? 'rctrl-active' : ''}}" bindtap="toggleEditMode">
+        <cover-view class="rctrl-icon">✎</cover-view>
+        <cover-view class="rctrl-label">编辑</cover-view>
+      </cover-view>
+      <cover-view class="rctrl-divider"></cover-view>
+      <cover-view class="rctrl-btn" bindtap="goToNavigation">
+        <cover-view class="rctrl-icon">▶</cover-view>
+        <cover-view class="rctrl-label">导航</cover-view>
+      </cover-view>
+      <cover-view class="rctrl-divider"></cover-view>
+    </cover-view>
+
+    <!-- 加载遮罩 -->
+    <cover-view class="loading-overlay" wx:if="{{loadingRoute}}">
+      <cover-view class="loading-spinner"></cover-view>
+      <cover-view class="loading-text">路线规划中...</cover-view>
+    </cover-view>
+  </map>
+
+  <!-- 底部面板 -->
+  <view class="bottom-panel {{editMode ? 'panel-edit' : ''}} {{panelCollapsed ? 'panel-collapsed' : ''}} {{panelDragging ? 'panel-dragging' : ''}}" style="transform: translateY({{panelTranslate}}rpx);" catchtouchmove="onPanelTouchMove">
+    <view class="panel-handle"
+      bindtouchstart="onPanelTouchStart"
+      catchtouchmove="onPanelTouchMove"
+      bindtouchend="onPanelTouchEnd"
+      catchtouchcancel="onPanelTouchEnd">
+      <view class="panel-handle-bar"></view>
+    </view>
+
+    <!-- 折叠态预览 -->
+    <view class="panel-collapsed-preview" wx:if="{{panelCollapsed && routeStats.points.length > 0}}">
+      <text class="collapsed-text">第 {{currentDay}} 天 · {{routeStats.points.length}}个点 · {{routeStats.distance}}km ▲</text>
+    </view>
+
+    <!-- 出行方式由行程自动识别，不允许在地图页改写 -->
+    <view class="travel-mode-readonly">
+      <image class="travel-tab-icon" src="{{travelModeMeta.iconPath}}" mode="aspectFit" />
+      <text>{{travelModeMeta.label}}路线</text>
+      <text class="travel-mode-hint">已按行程识别</text>
+    </view>
+
+    <!-- 日期标题 + 天数切换 -->
+    <view class="panel-day-header">
+      <text class="panel-day-title">第 {{currentDay}} 天 · {{dayDate || ''}}</text>
+      <view class="day-dots" wx:if="{{totalDays > 1}}">
+        <view
+          class="day-dot {{currentDay === item + 1 ? 'day-dot-active' : ''}}"
+          wx:for="{{totalDays}}"
+          wx:key="*this"
+          data-day="{{item + 1}}"
+          bindtap="switchDay"
+        >{{item + 1}}</view>
+      </view>
+    </view>
+
+    <!-- 途经点时间线组件 -->
+    <waypoint-timeline
+      wx:if="{{!panelCollapsed}}"
+      points="{{routeStats.points}}"
+      editMode="{{editMode}}"
+      bind:tap="onWaypointTap"
+      bind:moveup="moveWaypointUp"
+      bind:movedown="moveWaypointDown"
+      bind:remove="removeWaypoint"
+    />
+
+    <!-- 底部操作按钮 -->
+    <view class="panel-actions" wx:if="{{!panelCollapsed && !editMode}}">
+      <button class="btn-add-waypoint" bindtap="addWaypoint">＋ 添加途经点</button>
+      <button class="btn-optimize" bindtap="goToNavigation"><image class="btn-icon" src="/images/icons/nav.svg" mode="aspectFit" />去导航</button>
+    </view>
+    <view class="panel-actions" wx:if="{{!panelCollapsed && editMode}}">
+      <button class="btn-add-waypoint" bindtap="addWaypoint">＋ 添加途经点</button>
+      <button class="btn-optimize" bindtap="calculateRoute"><image class="btn-icon" src="/images/icons/refresh.svg" mode="aspectFit" />重新规划</button>
+    </view>
+  </view>
+
+  <!-- 添加途经点弹窗 -->
+  <view class="modal-overlay" wx:if="{{showAddModal}}" bindtap="cancelAddPoint">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">添加途经点</text>
+      </view>
+      <view class="modal-body">
+        <input class="modal-input" placeholder="输入地点名称，如：鼓浪屿" value="{{addPointName}}" bindinput="onAddPointInput" focus="{{true}}" />
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="cancelAddPoint">取消</button>
+        <button class="modal-btn confirm" bindtap="confirmAddPoint">确定添加</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑途经点弹窗 -->
+  <view class="modal-overlay" wx:if="{{showEditModal}}" bindtap="cancelEditPoint">
+    <view class="modal-content" catchtap="noop">
+      <view class="modal-header">
+        <text class="modal-title">编辑途经点</text>
+      </view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">名称</text>
+          <input class="modal-input" value="{{editPointName}}" bindinput="onEditNameInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">到达时间</text>
+          <input class="modal-input" value="{{editPointTime}}" bindinput="onEditTimeInput" placeholder="如 09:00" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">停留(小时)</text>
+          <input class="modal-input" value="{{editPointDuration}}" bindinput="onEditDurationInput" type="number" placeholder="60" />
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel" bindtap="cancelEditPoint">取消</button>
+        <button class="modal-btn confirm" bindtap="confirmEditPoint">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

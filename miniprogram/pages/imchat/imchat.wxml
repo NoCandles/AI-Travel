@@ -1,0 +1,39 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="chat-header">
+    <image class="header-avatar" src="{{targetUser.avatar || '/images/icons/user.svg'}}" mode="aspectFill" bindtap="viewUserProfile" />
+    <view class="header-main" bindtap="viewUserProfile">
+      <text class="header-name">{{targetUser.nickname || '旅行家'}}</text>
+      <text class="header-desc">{{targetUser.signature || '查看 TA 的主页'}}</text>
+    </view>
+  </view>
+
+  <scroll-view class="message-scroll" scroll-y scroll-into-view="{{scrollToId}}" enhanced show-scrollbar="{{false}}">
+    <view class="message-list">
+      <view id="msg-{{item.id}}" class="message-row {{item.isMine ? 'mine' : 'other'}}" wx:for="{{messages}}" wx:key="id">
+        <image class="message-avatar" src="{{item.isMine ? (selfAvatar || '/images/icons/user.svg') : (targetUser.avatar || '/images/icons/user.svg')}}" mode="aspectFill" />
+        <view class="message-bubble {{item.type}}">
+          <text class="message-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
+          <view class="route-card" wx:if="{{item.type === 'route'}}" bindtap="viewRouteDetail" data-route-id="{{item.routeId}}">
+            <image class="route-cover" src="{{item.routeCover || '/images/icons/clipboard-list.svg'}}" mode="aspectFill" />
+            <view class="route-info">
+              <text class="route-label">路线分享</text>
+              <text class="route-title">{{item.routeTitle || item.content}}</text>
+              <text class="route-action">点击查看详情</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:if="{{messages.length === 0 && !loading}}">
+        <image class="empty-icon" src="/images/icons/message-outline.svg" mode="aspectFit" />
+        <text class="empty-title">还没有聊天</text>
+        <text class="empty-desc">发一条消息，开启旅行交流</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="input-bar">
+    <input class="chat-input" value="{{inputText}}" placeholder="说点什么..." placeholder-class="input-placeholder" confirm-type="send" bindinput="onInput" bindconfirm="sendText" cursor-spacing="20" adjust-position="{{true}}" hold-keyboard="{{true}}" />
+    <button class="send-btn {{inputText ? 'active' : ''}}" bindtap="sendText">发送</button>
+  </view>
+</view>

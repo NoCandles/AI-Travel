@@ -1,0 +1,85 @@
+/* 所有 Token 由 variables.wxss 统一提供 */
+.page {
+  padding: 0 var(--space-page-x);
+  min-height: 100vh;
+  background: var(--color-surface-alt);
+  box-sizing: border-box;
+}
+
+/* ---- 深色模式页面背景（强制覆盖，规避跨页面 CSS 变量级联不可靠） ---- */
+.theme-dark.page,
+.page.theme-dark {
+  background: #111318;
+  color: var(--color-text);
+}
+
+/* ---- Header ---- */
+.header {
+  display: flex;
+  justify-content: space-between; align-items: flex-start;
+  margin-bottom: 32rpx;
+}
+.header-left { flex: 1; }
+.header-title {
+  font-size: 64rpx; font-weight: 800; color: var(--color-dark);
+  margin-bottom: 16rpx;
+}
+.header-indicator {
+  width: 72rpx; height: 6rpx; background: var(--color-primary); border-radius: 4rpx;
+}
+
+/* ---- FAQ ---- */
+.faq-section { margin-bottom: 32rpx; }
+.faq-item {
+  background: var(--color-card);
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 1rpx 4rpx rgba(0,0,0,0.04);
+}
+.faq-question {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 28rpx 24rpx;
+}
+.faq-q-text {
+  font-size: 28rpx; font-weight: 600; color: var(--color-dark);
+  flex: 1; padding-right: 16rpx;
+}
+.faq-arrow {
+  font-size: 24rpx; color: var(--color-muted);
+  transition: transform 0.3s;
+}
+.faq-arrow.arrow-up { transform: rotate(180deg); }
+.faq-answer {
+  padding: 0 24rpx 24rpx;
+}
+.faq-a-text {
+  font-size: 24rpx; color: var(--color-muted); line-height: 1.7;
+  white-space: pre-line;
+}
+
+/* ---- 联系方式 ---- */
+.contact-card {
+  background: var(--color-card);
+  border-radius: 16rpx;
+  padding: 32rpx 24rpx;
+  margin-bottom: 48rpx;
+  box-shadow: 0 1rpx 4rpx rgba(0,0,0,0.04);
+}
+.contact-title {
+  font-size: 28rpx; font-weight: 700; color: var(--color-dark);
+  display: block; margin-bottom: 12rpx;
+}
+.contact-desc {
+  font-size: 24rpx; color: var(--color-muted);
+  display: block; margin-bottom: 20rpx;
+}
+.contact-row {
+  display: flex; align-items: center;
+}
+.contact-label { font-size: 24rpx; color: var(--color-muted); }
+.contact-icon { width: 26rpx; height: 26rpx; opacity: .74; margin-right: 6rpx; }
+.contact-value { font-size: 24rpx; color: var(--color-primary); font-weight: 600; }
+
+/* ---- 暗色模式（仅页面特有覆盖） ---- */
+.theme-dark .faq-item, .theme-dark .contact-card { border: var(--card-border); }

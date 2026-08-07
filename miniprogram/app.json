@@ -1,0 +1,86 @@
+{
+  "lazyCodeLoading": "requiredComponents",
+  "darkmode": true,
+  "themeLocation": "theme.json",
+  "pages": [
+    "pages/index/index",
+    "pages/planner/planner",
+    "pages/map/map",
+    "pages/my-trips/my-trips",
+    "pages/messages/messages",
+    "pages/profile/profile",
+    "pages/login/login",
+    "pages/trip-detail/trip-detail",
+    "pages/publish-edit/publish-edit",
+    "pages/hotel-list/hotel-list",
+    "pages/edit-profile/edit-profile",
+    "pages/webview/webview",
+    "pages/my-publish/my-publish",
+    "pages/following/following",
+    "pages/points/points",
+    "pages/about/about",
+    "pages/help/help",
+    "pages/favorites/favorites",
+    "pages/footprint/footprint",
+    "pages/packing-list/packing-list",
+    "pages/current-trip/current-trip",
+    "pages/chat/chat",
+    "pages/imchat/imchat",
+    "pages/userprofile/userprofile",
+    "pages/settings/settings",
+    "pages/hiking-route/hiking-route"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "@navBgColor",
+    "navigationBarTitleText": "拾路派",
+    "navigationBarTextStyle": "@navTxtStyle",
+    "backgroundColor": "@bgColor"
+  },
+  "tabBar": {
+    "color": "@tabColor",
+    "selectedColor": "@tabSelectedColor",
+    "backgroundColor": "@tabBgColor",
+    "borderStyle": "@tabBorderStyle",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "发现",
+        "iconPath": "images/tab-square.png",
+        "selectedIconPath": "images/tab-square-active.png"
+      },
+      {
+        "pagePath": "pages/my-trips/my-trips",
+        "text": "行程",
+        "iconPath": "images/tab-trips.png",
+        "selectedIconPath": "images/tab-trips-active.png"
+      },
+      {
+        "pagePath": "pages/messages/messages",
+        "text": "消息",
+        "iconPath": "images/tab-message.png",
+        "selectedIconPath": "images/tab-message-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于获取您的位置信息，为您提供路线规划和导航服务"
+    },
+    "scope.addPhoneCalendar": {
+      "desc": "用于添加日程到手机系统日历，创建提醒"
+    },
+    "__usePrivacyCheck__": true
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation"
+  ],
+  "sitemapLocation": "sitemap.json"
+}

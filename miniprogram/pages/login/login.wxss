@@ -1,0 +1,207 @@
+/**
+ * 拾路派 · 登录页 v2.0
+ * 风格：白色背景 + 项目统一卡片风格
+ */
+
+/* ═══════════════════════════════════════════
+   1. 页面
+   ═══════════════════════════════════════════ */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx var(--space-page-x) 80rpx;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════════
+   2. Logo
+   ═══════════════════════════════════════════ */
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 48rpx;
+}
+.logo-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 28rpx;
+  margin-bottom: 24rpx;
+}
+.logo-title {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: 4rpx;
+}
+.logo-sub {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  margin-top: 8rpx;
+}
+
+/* ═══════════════════════════════════════════
+   3. 卡片 + 表单
+   ═══════════════════════════════════════════ */
+.card {
+  width: 100%;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  border: none;
+  margin-bottom: 24rpx;
+}
+
+.field {
+  margin-bottom: 20rpx;
+}
+.field-pwd {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 16rpx;
+  border: none;
+}
+.field-pwd .field-input {
+  flex: 1;
+  height: 88rpx;
+  padding: 0 0 0 20rpx;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  box-sizing: border-box;
+  line-height: 88rpx;
+}
+.field-pwd .field-input:focus {
+  background: transparent;
+}
+
+.field-pwd-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 88rpx;
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+  margin-right: 8rpx;
+}
+.field-pwd-toggle:active { opacity: 0.8; }
+
+/* ---- 通用输入框（非密码框） ---- */
+.field-input {
+  flex: 1;
+  height: 88rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: var(--color-text);
+  background: #ffffff;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  line-height: 88rpx;
+  border: none;
+}
+.field-input::placeholder { color: var(--color-text-muted); }
+.field-input:focus { background: var(--color-surface-alt); }
+
+/* 协议 */
+.agree {
+  margin-bottom: 24rpx;
+}
+.agree-label {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.agree-label checkbox { flex-shrink: 0; }
+.agree-text {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+.agree-link {
+  color: var(--color-brand);
+}
+
+/* 登录按钮 */
+.btn-login {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: var(--color-brand);
+  border-radius: var(--radius-full);
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--color-text-inverse);
+  border: none;
+  padding: 0;
+}
+.btn-login::after { border: none; }
+.btn-login:active { opacity: 0.85; }
+.btn-login[disabled] { opacity: 0.6; }
+
+/* 忘记密码 */
+.forgot {
+  text-align: center;
+  margin-top: 16rpx;
+}
+.forgot text {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
+
+/* ═══════════════════════════════════════════
+   6. 忘记密码展开
+   ═══════════════════════════════════════════ */
+.forgot-header {
+  margin-bottom: 20rpx;
+}
+.forgot-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 8rpx;
+}
+.forgot-desc {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+.forgot-cancel {
+  text-align: center;
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  padding: 12rpx 0;
+}
+
+/* ═══════════════════════════════════════════
+   7. 游客模式
+   ═══════════════════════════════════════════ */
+.guest {
+  margin-top: 8rpx;
+  padding: 20rpx;
+}
+.guest-text {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
+
+/* ═══════════════════════════════════════════
+   8. 深色模式
+   ═══════════════════════════════════════════ */
+.theme-dark .page { background: transparent; }
+.theme-dark .card { background: transparent; border: none; box-shadow: none; }
+/* logo-icon 已替换为图片，无需深色覆盖 */
+.theme-dark .logo-title { color: var(--color-text); }
+.theme-dark .field-input { background: #1a1d24; color: var(--color-text); }
+.theme-dark .field-input::placeholder { color: var(--color-text-muted); }
+.theme-dark .field-input:focus { background: #252830; }
+.theme-dark .field-pwd { background: #1a1d24; }
+.theme-dark .field-pwd .field-input { background: transparent; }
+.theme-dark .field-pwd .field-input:focus { background: transparent; }

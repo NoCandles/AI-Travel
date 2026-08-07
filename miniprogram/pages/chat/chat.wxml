@@ -1,0 +1,448 @@
+<!--
+  拾路派 · AI旅行助手 聊天页面 v5.0
+  UX 改造：品牌化欢迎页、平滑动效、时间分组、滚动到底部FAB
+  🆕 v5.1: 路线工作台 + 流式打字
+-->
+<view class="chat-page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="chat-header">
+    <view class="chat-header-main" bindtap="toggleHistory">
+      <text class="chat-header-title">{{currentTitle || '新对话'}}</text>
+      <text class="chat-header-subtitle">聊天记录</text>
+    </view>
+    <view class="chat-header-actions">
+      <button class="chat-icon-btn" bindtap="toggleHistory" aria-label="聊天历史">
+        <image class="ui-icon" src="/images/icons/menu.svg" mode="aspectFit"></image>
+      </button>
+      <button class="chat-new-btn" bindtap="onNewConversation">
+        <image class="btn-icon" src="/images/icons/plus.svg" mode="aspectFit"></image>
+        <text>新对话</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 网络断开提示条 -->
+  <view class="network-bar {{_offline ? 'network-bar-show' : ''}}">
+    <text>⚠ 网络连接已断开，部分功能不可用</text>
+  </view>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 💬 消息列表                                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <scroll-view class="msg-list" scroll-y
+    scroll-into-view="{{scrollToId}}"
+    scroll-with-animation
+    enhanced
+    show-scrollbar="{{false}}"
+    bindscroll="onMsgListScroll">
+
+    <!-- 欢迎区域 -->
+    <view class="welcome" wx:if="{{phase === 'welcome' && messages.length <= 1}}">
+      <view class="welcome-brand">
+        <view class="welcome-title">想去哪玩？🌍</view>
+        <view class="welcome-desc">小派帮你规划路线～<text style="display:block;margin-top:4rpx;font-size:22rpx;color:var(--color-muted)">试试看说「成都周末2日游」或者点下面的城市</text></view>
+      </view>
+      <view class="welcome-grid">
+        <view class="welcome-card" wx:for="{{hotDestinations}}" wx:key="name"
+          bindtap="onQuickChip" data-text="{{item.query}}">
+          <image class="welcome-card-icon" src="{{item.icon}}" mode="aspectFit"></image>
+          <text class="welcome-card-name">{{item.name}}</text>
+          <text class="welcome-card-tag">{{item.tagline}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 消息列表（跳过 _hidden 的内部消息） -->
+    <block wx:for="{{messages}}" wx:key="id" wx:for-item="msg">
+      <block wx:if="{{!msg._hidden}}">
+
+      <!-- 时间分隔线 -->
+      <view class="time-divider" wx:if="{{msg._timeDivider}}" id="{{msg.id}}">
+        <view class="time-divider-line"></view>
+        <text class="time-divider-text">{{msg._timeDivider}}</text>
+        <view class="time-divider-line"></view>
+      </view>
+
+      <!-- 用户消息 -->
+      <view class="msg-user {{msg._cont ? 'msg-cont' : ''}}" wx:if="{{msg.role === 'user'}}" id="{{msg.id}}"
+        bindlongpress="onLongPressMsg" data-msg-id="{{msg.id}}" data-content="{{msg.content}}">
+        <image class="msg-user-avatar" src="{{userAvatar || '/images/icons/user.svg'}}" mode="aspectFill"></image>
+        <view class="msg-user-bubble">{{msg.content}}</view>
+      </view>
+
+      <!-- AI 文本消息 🆕 流式消息可点击跳过 -->
+      <view class="msg-ai {{msg._cont ? 'msg-cont' : ''}}" wx:elif="{{msg.type === 'text' || msg.type === 'markdown'}}" id="{{msg.id}}"
+        bindlongpress="onLongPressMsg" data-msg-id="{{msg.id}}" data-content="{{msg.content}}"
+        catchtap="{{msg._streaming ? 'onSkipStreaming' : ''}}">
+        <image class="msg-ai-avatar" src="/images/小程序头像.png" mode="aspectFill"></image>
+        <view class="msg-ai-bubble msg-ai-rich" wx:if="{{msg._richNodes}}">
+          <rich-text nodes="{{msg._richNodes}}" space="ensp"></rich-text>
+        </view>
+        <view class="msg-ai-bubble" wx:else>
+          {{msg.content}}
+          <text class="stream-cursor" wx:if="{{msg._streaming}}">▎</text>
+        </view>
+      </view>
+
+      <!-- 打字中 -->
+      <view class="msg-ai" wx:elif="{{msg.type === 'typing'}}" id="{{msg.id}}">
+        <image class="msg-ai-avatar" src="/images/小程序头像.png" mode="aspectFill"></image>
+        <view class="msg-ai-bubble typing-bubble">
+          <view class="typing-dots">
+            <view class="typing-dot"></view>
+            <view class="typing-dot"></view>
+            <view class="typing-dot"></view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 参数卡片 -->
+      <view class="msg-ai {{msg.payload && msg.payload._editAnim ? 'param-card-edit-enter' : ''}}" wx:elif="{{msg.type === 'param_card'}}" id="{{msg.id}}">
+        <image class="msg-ai-avatar" src="/images/小程序头像.png" mode="aspectFill"></image>
+        <view class="msg-ai-card">
+          <text class="card-context">{{msg.content}}</text>
+          <view class="param-card">
+            <view class="param-card-head">
+              <image class="card-head-svg" src="{{msg.payload.editing ? '/images/icons/edit.svg' : '/images/icons/clipboard-list.svg'}}" mode="aspectFit"></image>
+              <text class="param-card-head-title">{{msg.payload.editing ? '调整参数' : '确认参数'}}</text>
+              <text class="param-card-head-badge" wx:if="{{!msg.payload.editing}}">可修改</text>
+            </view>
+            <view class="param-field param-field-dest">
+              <image class="param-field-icon" src="/images/icons/location-pin.svg" mode="aspectFit"></image>
+              <input wx:if="{{msg.payload.editing}}" class="param-input"
+                value="{{msg.payload.destination}}" data-field="destination"
+                bindinput="onParamInput" placeholder="想去哪里？" focus="{{true}}" />
+              <text wx:else class="param-field-val">{{msg.payload.destination}}</text>
+            </view>
+            <view class="param-endpoints" wx:if="{{msg.payload.startPoint || msg.payload.endPoint || msg.payload.startPointOptions.length > 0 || msg.payload.endPointOptions.length > 0 || msg.payload.editing}}">
+              <view class="endpoint-btn {{msg.payload.startPoint ? 'endpoint-btn-set' : 'endpoint-btn-empty'}}" bindtap="onChooseStartLocation" hover-class="endpoint-btn-hover">
+                <image class="endpoint-loc-icon" src="/images/icons/location-pin.svg" mode="aspectFit"></image>
+                <view class="endpoint-btn-text">
+                  <text class="endpoint-btn-label">起点</text>
+                  <text class="endpoint-btn-val {{!msg.payload.startPoint ? 'endpoint-placeholder' : ''}}">{{msg.payload.startPoint || '点击选择出发地点'}}</text>
+                </view>
+                <view class="endpoint-btn-dot" wx:if="{{!msg.payload.startPoint}}"></view>
+              </view>
+              <view class="endpoint-arrow">↓</view>
+              <view class="endpoint-btn {{msg.payload.endPoint ? 'endpoint-btn-set' : 'endpoint-btn-empty'}}" bindtap="onChooseEndLocation" hover-class="endpoint-btn-hover">
+                <image class="endpoint-loc-icon" src="/images/icons/location-pin.svg" mode="aspectFit"></image>
+                <view class="endpoint-btn-text">
+                  <text class="endpoint-btn-label">终点</text>
+                  <text class="endpoint-btn-val {{!msg.payload.endPoint ? 'endpoint-placeholder' : ''}}">{{msg.payload.endPoint || '点击选择返程地点'}}</text>
+                </view>
+                <view class="endpoint-btn-dot" wx:if="{{!msg.payload.endPoint}}"></view>
+              </view>
+              <view class="endpoint-same-row" wx:if="{{msg.payload.startPoint && !msg.payload.endPoint}}">
+                <text class="endpoint-same-btn" bindtap="onUseStartAsEnd">往返？终点同起点</text>
+              </view>
+              <view class="endpoint-same-row" wx:elif="{{msg.payload.startPoint && msg.payload.endPoint}}">
+                <text class="endpoint-same-btn endpoint-same-done" bindtap="onUseStartAsEnd">✓ 终点已设为起点</text>
+              </view>
+            </view>
+            <view class="param-pills">
+              <view class="param-pill {{msg.payload.editing ? 'pill-edit' : ''}}"
+                bindtap="{{msg.payload.editing ? 'onCycleDays' : ''}}">
+                <image class="pill-icon" src="/images/icons/calendar.svg" mode="aspectFit"></image>
+                <text>{{msg.payload.days}}天</text>
+                <image class="pill-hint-icon" wx:if="{{msg.payload.editing}}" src="/images/icons/refresh.svg" mode="aspectFit"></image>
+              </view>
+              <picker wx:if="{{msg.payload.editing}}" mode="date" value="{{tempStartDate}}"
+                start="2024-01-01" end="2027-12-31" bindchange="onStartDateChange">
+                <view class="param-pill pill-edit">
+                  <image class="pill-icon" src="/images/icons/calendar.svg" mode="aspectFit"></image>
+                  <text>{{msg.payload.dateDisplay || (msg.payload.startDate + ' - ' + msg.payload.endDate)}}</text>
+                  <image class="pill-hint-icon" src="/images/icons/calendar.svg" mode="aspectFit"></image>
+                </view>
+              </picker>
+              <view wx:else class="param-pill">
+                <image class="pill-icon" src="/images/icons/calendar.svg" mode="aspectFit"></image>
+                <text>{{msg.payload.dateDisplay || (msg.payload.startDate + ' - ' + msg.payload.endDate)}}</text>
+              </view>
+              <view class="param-pill {{msg.payload.editing ? 'pill-edit' : ''}}"
+                bindtap="{{msg.payload.editing ? 'onCyclePreference' : ''}}">
+                <image class="pill-icon" src="/images/icons/preference.svg" mode="aspectFit"></image>
+                <text>{{msg.payload.preference}}</text>
+                <image class="pill-hint-icon" wx:if="{{msg.payload.editing}}" src="/images/icons/refresh.svg" mode="aspectFit"></image>
+              </view>
+              <view class="param-pill {{msg.payload.editing ? 'pill-edit' : ''}}"
+                bindtap="{{msg.payload.editing ? 'onCycleBudget' : ''}}">
+                <image class="pill-icon" src="/images/icons/budget.svg" mode="aspectFit"></image>
+                <text>{{msg.payload.budget}}</text>
+                <image class="pill-hint-icon" wx:if="{{msg.payload.editing}}" src="/images/icons/refresh.svg" mode="aspectFit"></image>
+              </view>
+              <view class="param-pill {{msg.payload.editing ? 'pill-edit' : ''}}"
+                bindtap="{{msg.payload.editing ? 'onCycleMode' : ''}}">
+                <image class="pill-icon" src="{{msg.payload.travelMode === 'hiking' ? '/images/icons/footprints.svg' : (msg.payload.travelMode === 'transit' ? '/images/icons/bus.svg' : '/images/icons/car.svg')}}" mode="aspectFit"></image>
+                <text>{{msg.payload.travelModeLabel}}</text>
+                <image class="pill-hint-icon" wx:if="{{msg.payload.editing}}" src="/images/icons/refresh.svg" mode="aspectFit"></image>
+              </view>
+            </view>
+            <view class="param-spots" wx:if="{{msg.payload.mustVisit.length > 0 || msg.payload.editing}}">
+              <view class="param-spots-label">
+                <image class="label-icon" src="/images/icons/location-pin.svg" mode="aspectFit"></image>
+                <text>必去景点</text>
+              </view>
+              <view class="param-spots-tags">
+                <text class="spot-tag" wx:for="{{msg.payload.mustVisit}}" wx:key="*this" wx:for-item="spot">
+                  {{spot}}
+                  <image wx:if="{{msg.payload.editing}}" class="spot-tag-del"
+                    data-spot="{{spot}}" bindtap="onRemoveSpot" src="/images/icons/close.svg" mode="aspectFit"></image>
+                </text>
+                <input wx:if="{{msg.payload.editing}}" class="spot-add"
+                  placeholder="+ 添加" data-field="newSpot"
+                  bindinput="onParamInput" bindconfirm="onAddSpot"
+                  value="{{pendingSpotInput}}" />
+              </view>
+            </view>
+            <view class="param-card-actions">
+              <button wx:if="{{!msg.payload.editing}}" class="btn btn-brand" bindtap="onConfirmParams">
+                <image class="btn-icon" src="/images/icons/sparkles.svg" mode="aspectFit"></image>
+                <text>{{msg.payload.travelMode === 'hiking' ? '确认，查看徒步路线' : '确认，生成路线'}}</text>
+              </button>
+              <button wx:if="{{msg.payload.editing}}" class="btn btn-brand" bindtap="onSaveEditParams">
+                <image class="btn-icon" src="/images/icons/check.svg" mode="aspectFit"></image>
+                <text>保存修改</text>
+              </button>
+              <button class="btn btn-ghost"
+                bindtap="{{msg.payload.editing ? 'onCancelEdit' : 'onEditParams'}}">
+                {{msg.payload.editing ? '取消' : '修改参数'}}
+              </button>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 生成进度 -->
+      <view class="msg-ai" wx:elif="{{msg.type === 'progress'}}" id="{{msg.id}}">
+        <image class="msg-ai-avatar" src="/images/小程序头像.png" mode="aspectFill"></image>
+        <view class="msg-ai-card">
+          <view class="progress-card">
+            <view class="progress-head">
+              <view class="progress-spinner"></view>
+              <text class="progress-label">{{msg.payload.currentLabel}}</text>
+              <text class="progress-pct">{{msg.payload.percent}}%</text>
+            </view>
+            <view class="progress-bar">
+              <view class="progress-bar-fill" style="width: {{msg.payload.percent}}%"></view>
+            </view>
+            <view class="progress-steps">
+              <block wx:for="{{msg.payload.stepLabels}}" wx:key="index" wx:for-item="label">
+                <view class="progress-step {{msg.payload.steps[index]}}">
+                  <view class="progress-step-dot">
+                    <image wx:if="{{msg.payload.steps[index] === 'done'}}" class="progress-check-icon" src="/images/icons/check.svg" mode="aspectFit"></image>
+                  </view>
+                  <text class="progress-step-text">{{label}}</text>
+                </view>
+                <view class="progress-step-line {{index < msg.payload.stepLabels.length - 1 ? msg.payload.steps[index + 1] : ''}}"
+                  wx:if="{{index < msg.payload.stepLabels.length - 1}}"></view>
+              </block>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 酒店卡片 -->
+      <view class="msg-ai" wx:elif="{{msg.type === 'hotel_card'}}" id="{{msg.id}}">
+        <image class="msg-ai-avatar" src="/images/小程序头像.png" mode="aspectFill"></image>
+        <view class="msg-ai-card">
+          <view class="hotel-card">
+            <view class="hotel-card-head">
+              <text class="hotel-card-title">{{msg.payload.destination}} · 住宿推荐</text>
+            </view>
+            <scroll-view class="hotel-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+              <view class="hotel-scroll-inner">
+                <view class="hotel-item" wx:for="{{msg.payload.hotels}}" wx:key="name" wx:for-item="hotel">
+                  <view class="hotel-item-content">
+                    <view class="hotel-item-name">{{hotel.name}}</view>
+                    <view class="hotel-item-meta">{{hotel.meta}}</view>
+                    <view class="hotel-item-price" wx:if="{{!hotel.isDayTrip}}">¥{{hotel.price}}<text class="hotel-price-unit">/晚起</text></view>
+                  </view>
+                </view>
+              </view>
+            </scroll-view>
+            <view class="hotel-scroll-hint" wx:if="{{msg.payload.hotels && msg.payload.hotels.length > 1}}">← 左右滑动查看更多 →</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 动作卡片 -->
+      <view class="msg-ai" wx:elif="{{msg.type === 'action_card'}}" id="{{msg.id}}">
+        <image class="msg-ai-avatar" src="/images/小程序头像.png" mode="aspectFill"></image>
+        <view class="msg-ai-card">
+          <view class="action-card">
+            <view class="action-card-head">
+              <image class="action-card-icon" src="/images/icons/edit.svg" mode="aspectFit"></image>
+              <text class="action-card-title" wx:if="{{msg.payload.actionType === 'regenerate_day'}}">可重新规划第{{msg.payload.dayNum}}天</text>
+            </view>
+            <text class="action-card-hint">{{msg.payload.hint}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 地图卡片 -->
+      <view class="msg-ai" wx:elif="{{msg.type === 'map_card'}}" id="{{msg.id}}">
+        <image class="msg-ai-avatar" src="/images/小程序头像.png" mode="aspectFill"></image>
+        <view class="msg-ai-card">
+          <view class="map-card" bindtap="onViewMap">
+            <image class="map-card-icon" src="/images/icons/map-icon.svg" mode="aspectFit"></image>
+            <text class="map-card-label">{{msg.payload.destination}} · 路线预览</text>
+            <view class="map-card-btn"><text>查看路线</text><image class="map-btn-icon" src="/images/icons/arrow-right.svg" mode="aspectFit"></image></view>
+          </view>
+        </view>
+      </view>
+
+    </block>
+    </block>
+
+    <view class="msg-list-bottom"></view>
+  </scroll-view>
+
+  <!-- 🆕 路线工作台：悬浮在输入栏上方 -->
+  <view class="route-panel {{_routeData ? 'route-panel-show' : ''}}">
+
+    <!-- 折叠态：一条窄提示条 -->
+    <view class="route-bar" wx:if="{{_routeData && _routeCollapsed}}" bindtap="toggleRoutePanel">
+      <image class="route-bar-icon" src="/images/icons/location-pin.svg" mode="aspectFit"></image>
+      <text class="route-bar-text" wx:if="{{tripParams}}">{{tripParams.destination}} · {{tripParams.days}}日游</text>
+      <text class="route-bar-action">展开路线</text>
+      <button class="route-bar-map" catchtap="onViewMap">
+        <image src="/images/icons/map-icon.svg" mode="aspectFit"></image>
+      </button>
+    </view>
+
+    <!-- 展开态：完整路线内容 -->
+    <view class="route-full" wx:if="{{_routeData && !_routeCollapsed}}">
+      <view class="route-header">
+        <text class="route-title">{{tripParams ? tripParams.destination : ''}} · 路线详情</text>
+        <button class="route-collapse-btn" bindtap="toggleRoutePanel">收起</button>
+      </view>
+
+      <!-- Tab 切换 -->
+      <scroll-view class="route-tabs" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="route-tab {{routeTabActive === 'seasonal' ? 'route-tab-on' : ''}}"
+          bindtap="onSwitchRoute" data-route="seasonal">
+          <image class="route-tab-icon" src="/images/icons/flower.svg" mode="aspectFit"></image>
+          <text>时令定制</text>
+        </view>
+        <view class="route-tab {{routeTabActive === 'trendy' ? 'route-tab-on' : ''}}"
+          bindtap="onSwitchRoute" data-route="trendy">
+          <image class="route-tab-icon" src="/images/icons/flame.svg" mode="aspectFit"></image>
+          <text>网红爆款</text>
+        </view>
+        <view class="route-tab {{routeTabActive === 'classic' ? 'route-tab-on' : ''}}"
+          bindtap="onSwitchRoute" data-route="classic">
+          <image class="route-tab-icon" src="/images/icons/star.svg" mode="aspectFit"></image>
+          <text>经典稳妥</text>
+        </view>
+      </scroll-view>
+
+      <!-- 当前路线内容 -->
+      <scroll-view class="route-body" scroll-y enhanced show-scrollbar="{{false}}">
+        <block wx:if="{{_currentRoute}}">
+          <view class="route-stats" wx:if="{{_currentRoute.distance || _currentRoute.spotCount}}">
+            <text class="route-stat" wx:if="{{_currentRoute.distance}}">🗺 {{_currentRoute.distance}}</text>
+            <text class="route-stat" wx:if="{{_currentRoute.spotCount}}">📍 {{_currentRoute.spotCount}}个景点</text>
+          </view>
+          <view class="route-days">
+            <view class="route-day" wx:for="{{_currentRoute.days}}" wx:key="index" wx:for-item="day" wx:for-index="dayIdx">
+              <view class="route-day-num">D{{dayIdx + 1}}</view>
+              <view class="route-day-content">
+                <text class="route-day-spots">{{day.spots}}</text>
+                <view class="route-spot-list" wx:if="{{day.spotDetails && day.spotDetails.length > 0}}">
+                  <view class="route-spot-item {{spot._expanded ? 'expanded' : ''}}"
+                    wx:for="{{day.spotDetails}}" wx:key="name" wx:for-item="spot"
+                    wx:for-index="spotIdx" bindtap="toggleRouteSpotExpand"
+                    data-day-idx="{{dayIdx}}" data-spot-idx="{{spotIdx}}">
+                    <view class="route-spot-header">
+                      <text class="route-spot-name">{{spot.name}}</text>
+                      <text class="route-spot-time" wx:if="{{spot.arrivalTime}}">{{spot.arrivalTime}}</text>
+                      <text class="route-spot-toggle" wx:if="{{spot.travelGuide || spot.reason}}">{{spot._expanded ? '收起' : '展开'}}</text>
+                    </view>
+                    <text class="route-spot-reason" wx:if="{{spot.reason}}">为什么这样安排：{{spot.reason}}</text>
+                    <view class="route-spot-guide" wx:if="{{spot._expanded && spot.travelGuide}}">
+                      <text>{{spot.travelGuide}}</text>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+      </scroll-view>
+
+    </view>
+  </view>
+
+  <!-- 滚动到底部 FAB -->
+  <view class="scroll-bottom-fab {{_showScrollBottom ? 'scroll-bottom-fab-show' : ''}}" bindtap="scrollToBottom">
+    <image class="scroll-bottom-icon" src="/images/icons/arrow-down.svg" mode="aspectFit"></image>
+  </view>
+
+  <!-- 快捷标签 -->
+  <view class="quick-bar {{quickChips && quickChips.length > 0 ? 'quick-bar-show' : ''}}">
+    <scroll-view class="quick-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <text class="quick-chip" wx:for="{{quickChips}}" wx:key="*this" wx:for-item="chip"
+        bindtap="onQuickChip" data-text="{{chip}}">{{chip}}</text>
+    </scroll-view>
+  </view>
+
+  <!-- 行程 dock + 输入栏 -->
+  <view class="input-area {{phase === 'done' && _currentTripId ? 'input-area-dock' : ''}}">
+    <view class="trip-dock {{phase === 'done' && _currentTripId ? 'trip-dock-show' : ''}}">
+      <view class="dock-btn" bindtap="onViewMap">查看路线</view>
+      <view class="dock-btn" bindtap="onEditTrip">微调</view>
+      <view class="dock-btn" bindtap="onSaveTrip" wx:if="{{!_tripSaved}}">保存</view>
+    </view>
+    <view class="input-bar">
+      <view class="input-row">
+        <textarea class="input-field"
+          value="{{inputText}}" placeholder="说说想去哪..."
+          bindinput="onInput" bindconfirm="onSend"
+          auto-height maxlength="-1" cursor-spacing="8"
+          adjust-position="{{true}}" hold-keyboard="{{true}}"
+          disable-default-padding="{{true}}" />
+        <view class="input-go {{inputText ? 'input-go-on' : ''}}" bindtap="onSend">
+          <image class="input-go-icon" src="/images/icons/send.svg" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 历史会话抽屉 -->
+  <view class="history-mask" wx:if="{{historyVisible}}" bindtap="closeHistory"></view>
+  <view class="history-drawer {{historyVisible ? 'history-drawer-show' : ''}}">
+    <view class="history-handle"></view>
+    <view class="history-head">
+      <view>
+        <text class="history-title">聊天历史</text>
+        <text class="history-subtitle">每条记录独立保存，可随时切换</text>
+      </view>
+      <button class="history-add" bindtap="onNewConversation">
+        <image class="btn-icon" src="/images/icons/plus.svg" mode="aspectFit"></image>
+        <text>新对话</text>
+      </button>
+    </view>
+    <view class="history-loading" wx:if="{{historyLoading}}">加载中...</view>
+    <scroll-view class="history-list" scroll-y wx:else>
+      <view class="history-empty" wx:if="{{conversations.length === 0}}">
+        <text class="history-empty-title">暂无聊天记录</text>
+        <text class="history-empty-desc">发送第一条消息后会自动保留</text>
+      </view>
+      <view class="history-item {{item.id === _conversationId ? 'history-item-active' : ''}}"
+        wx:for="{{conversations}}" wx:key="id" wx:for-item="item"
+        bindtap="onSwitchConversation" data-id="{{item.id}}">
+        <view class="history-item-content">
+          <view class="history-item-row">
+            <text class="history-item-title">{{item.title || '新对话'}}</text>
+            <text class="history-item-time">{{item.timeText}}</text>
+          </view>
+          <text class="history-item-last">{{item.lastMessage || '还没有消息'}}</text>
+          <text class="history-item-count">{{item.countText}}</text>
+        </view>
+        <button class="history-delete" catchtap="onDeleteConversation" data-id="{{item.id}}">
+          <image class="delete-icon" src="/images/icons/delete.svg" mode="aspectFit"></image>
+        </button>
+      </view>
+    </scroll-view>
+  </view>
+
+</view>

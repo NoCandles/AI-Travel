@@ -1,0 +1,83 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- 统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-row">
+      <view class="stat-item">
+        <text class="stat-num">{{totalCities}}</text>
+        <text class="stat-label">城市</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-num">{{totalTrips}}</text>
+        <text class="stat-label">旅程</text>
+      </view>
+    </view>
+    <view class="stats-sub">用脚步丈量世界</view>
+  </view>
+
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{activeTab === 'map' ? 'active' : ''}}" data-tab="map" bindtap="switchTab">地图</view>
+    <view class="tab-item {{activeTab === 'list' ? 'active' : ''}}" data-tab="list" bindtap="switchTab">城市</view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-box" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+  </view>
+
+  <!-- 地图视图 -->
+  <view class="map-section" wx:if="{{!loading && activeTab === 'map' && totalCities > 0}}">
+    <map
+      id="footprint-map"
+      class="footprint-map"
+      latitude="{{mapLatitude}}"
+      longitude="{{mapLongitude}}"
+      scale="{{mapScale}}"
+      polygons="{{polygons}}"
+      bindpolygontap="onPolygonTap"
+      show-location="{{false}}"
+      enable-overlooking="{{false}}"
+      enable-rotate="{{false}}"
+    ></map>
+    <!-- 地图下方图例 -->
+    <view class="map-legend">
+      <view class="legend-item">
+        <view class="legend-area visited"></view>
+        <text class="legend-text">已到过的城市</text>
+      </view>
+      <text class="legend-hint">点击高亮区域查看城市</text>
+    </view>
+  </view>
+
+  <!-- 列表视图 -->
+  <view class="list-section" wx:if="{{!loading && activeTab === 'list'}}">
+    <view class="list-card" wx:for="{{cities}}" wx:key="name" wx:for-item="city">
+      <view class="list-rank" wx:if="{{index < 3}}">{{index + 1}}</view>
+      <view class="list-icon-wrap">
+        <image class="list-icon" src="/images/icons/location-pin.svg" mode="aspectFit" />
+      </view>
+      <view class="list-info">
+        <text class="list-name">{{city.name}}</text>
+        <text class="list-count">{{city.tripCount}} 次旅行</text>
+      </view>
+      <view class="list-bar-wrap" wx:if="{{totalTrips > 0}}">
+        <view class="list-bar" style="width: {{city.tripCount / totalTrips * 100}}%"></view>
+      </view>
+    </view>
+    <view class="empty-list" wx:if="{{cities.length === 0}}">
+      <image class="empty-icon-img" src="/images/icons/footprints.svg" mode="aspectFit" />
+      <text class="empty-title">还没有留下足迹</text>
+      <text class="empty-desc">完成你的第一段旅程吧</text>
+    </view>
+  </view>
+
+  <!-- 空状态（两个 tab 都没有数据时） -->
+  <view class="empty-page" wx:if="{{!loading && totalCities === 0 && activeTab === 'map'}}">
+    <image class="empty-icon-img" src="/images/icons/footprints.svg" mode="aspectFit" />
+    <text class="empty-title">还没有留下足迹</text>
+    <text class="empty-desc">开始你的第一段旅程吧</text>
+  </view>
+
+</view>

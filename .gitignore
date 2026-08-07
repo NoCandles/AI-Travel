@@ -1,0 +1,44 @@
+# Dependencies and build outputs
+**/node_modules/
+**/target/
+**/dist/
+**/build/
+*.class
+*.jar
+
+# IDE and OS files
+**/.idea/
+**/.vscode/
+.DS_Store
+Thumbs.db
+*.iml
+
+# Logs and runtime files
+*.log
+logs/
+uploads/
+tmp/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+admin-backend/src/main/resources/application.yml
+travel-backend/application.yml
+travel-backend/application-dev.yml
+travel-backend/application-prod.yml
+ai-travel-backend/admin-service/src/main/resources/application.yml
+ai-travel-backend/travel-service/src/main/resources/application.yml
+ai-travel-backend/travel-service/src/main/resources/application-dev.yml
+ai-travel-backend/travel-service/src/main/resources/application-prod.yml
+
+# Local assistant/tooling artifacts
+.agents/
+.workbuddy/
+.codex-audit-screenshots/
+.codex-audit-capture.py
+**/.codex/
+miniprogram/.codebuddy/
+miniprogram/codebuddy-plugin/
+miniprogram/rules/
+miniprogram-dev-skill-*.zip

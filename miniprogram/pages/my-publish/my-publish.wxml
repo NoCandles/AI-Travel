@@ -1,0 +1,41 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <!-- 顶部 -->
+  <view class="header">
+    <text class="header-title">我的发布</text>
+    <text class="header-subtitle">{{publishList.length}} 篇发布的行程</text>
+  </view>
+
+  <!-- 加载 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <view class="publish-grid">
+      <view class="publish-card" wx:for="{{publishList}}" wx:key="id" data-id="{{item.id}}" bindtap="viewDetail">
+        <image class="publish-cover" src="{{item.coverImage || 'https://picsum.photos/id/1031/400/280'}}" mode="aspectFill"/>
+        <view class="publish-body">
+          <text class="publish-title">{{item.title}}</text>
+          <view class="publish-meta">
+            <view class="publish-stat"><image src="/images/icons/love-full.svg" mode="aspectFit" /><text>{{item.likeCount || 0}}</text></view>
+            <view class="publish-stat"><image src="/images/icons/comment.svg" mode="aspectFit" /><text>{{item.commentCount || 0}}</text></view>
+            <view class="publish-stat"><image src="/images/icons/star.svg" mode="aspectFit" /><text>{{item.favCount || 0}}</text></view>
+          </view>
+          <text class="publish-time">{{item.publishTime || '刚刚'}}</text>
+        </view>
+        <view class="publish-actions">
+          <button class="share-btn-pill" open-type="share" data-id="{{item.id}}" data-title="{{item.title}}" data-cover="{{item.coverImage}}">分享</button>
+          <button class="publish-edit" catchtap="editPublish" data-id="{{item.id}}">编辑</button>
+          <button class="publish-delete" catchtap="deletePublish" data-id="{{item.id}}">删除</button>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{publishList.length === 0}}">
+      <image class="empty-icon-img" src="/images/icons/notification.svg" mode="aspectFit" />
+      <text class="empty-text">还没有发布过行程</text>
+      <text class="empty-desc">去广场发布你的第一篇行程吧</text>
+    </view>
+  </block>
+</view>

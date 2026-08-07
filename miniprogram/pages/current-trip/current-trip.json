@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "当前行程",
+  "navigationStyle": "custom",
+  "backgroundColor": "#f5f5f5",
+  "usingComponents": {
+    "route-stats-card": "../../components/route-stats-card/route-stats-card",
+    "path-picker": "../../components/path-picker/path-picker",
+    "waypoint-timeline": "../../components/waypoint-timeline/waypoint-timeline"
+  }
+}

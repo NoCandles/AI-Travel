@@ -1,0 +1,130 @@
+/* 所有 Token 由 variables.wxss 统一提供 */
+.page {
+  padding: 0 var(--space-page-x);
+  min-height: 100vh;
+  background: var(--color-surface-alt);
+  box-sizing: border-box;
+  padding-bottom: var(--space-10);
+}
+
+/* ---- 深色模式页面背景（强制覆盖，规避跨页面 CSS 变量级联不可靠） ---- */
+.theme-dark.page,
+.page.theme-dark {
+  background: #111318;
+  color: var(--color-text);
+}
+
+/* ---- Header ---- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32rpx;
+}
+.header-left { flex: 1; }
+.header-title {
+  font-size: 64rpx;
+  font-weight: 800;
+  color: var(--color-dark);
+  margin-bottom: 16rpx;
+}
+.header-indicator {
+  width: 72rpx;
+  height: 6rpx;
+  background: var(--color-primary);
+  border-radius: 4rpx;
+}
+
+/* ---- 用户卡片列表 ---- */
+.following-list { padding-bottom: var(--space-12); }
+.user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-3);
+  box-shadow: var(--card-shadow);
+  border: var(--card-border);
+}
+.user-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+.user-avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--color-surface-input);
+}
+.user-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+.user-name {
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.user-bio {
+  font-size: var(--text-caption);
+  color: var(--color-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.user-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 2rpx;
+}
+.meta-item { font-size: var(--text-small); color: var(--color-muted); }
+.meta-divider { font-size: 20rpx; color: var(--color-border); }
+
+.btn-follow {
+  height: 58rpx;
+  padding: 0 24rpx;
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+  margin-left: var(--space-3);
+  line-height: 58rpx;
+}
+.btn-follow.followed {
+  background: var(--color-brand-light);
+  color: var(--color-brand-deep);
+}
+.btn-follow::after { border: none; }
+
+.empty-action {
+  width: 220rpx;
+  height: 72rpx;
+  margin: 0 auto;
+  border-radius: var(--radius-full);
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-bold);
+  line-height: 72rpx;
+  text-align: center;
+}
+
+/* ---- 加载更多 ---- */
+.loading-more {
+  text-align: center; padding: 24rpx; font-size: 24rpx; color: var(--color-muted);
+}
+
+/* ---- 暗色模式（仅页面特有覆盖） ---- */
+.theme-dark .user-card { border: var(--card-border); }

@@ -1,0 +1,29 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: admin-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/travel_app?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: assign_uuid
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+
+admin:
+  jwt:
+    secret: ${ADMIN_JWT_SECRET:change-me-to-an-independent-long-random-secret}
+    expiration-ms: ${ADMIN_JWT_EXPIRATION_MS:86400000}
+

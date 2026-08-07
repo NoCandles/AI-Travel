@@ -1,0 +1,97 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text>正在整理行程图片...</text>
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <view class="cover-preview">
+      <image class="cover-image" src="{{coverImage || 'https://picsum.photos/id/1031/750/520'}}" mode="aspectFill" />
+      <view class="cover-shade"></view>
+      <view class="cover-copy">
+        <text class="cover-kicker">{{location || '旅行目的地'}} · {{days}}天{{nights}}晚</text>
+        <text class="cover-title">{{title || '给这段旅行起个名字'}}</text>
+      </view>
+    </view>
+
+    <view class="content">
+      <view class="section-card">
+        <view class="section-head">
+          <text class="section-title">发布信息</text>
+          <text class="section-count">{{title.length}}/40</text>
+        </view>
+        <input class="title-input" maxlength="40" placeholder="标题，例如：三天两晚慢游杭州" value="{{title}}" bindinput="onTitleInput" />
+        <textarea class="desc-input" maxlength="120" auto-height placeholder="一句话介绍行程亮点" value="{{description}}" bindinput="onDescInput" />
+      </view>
+
+      <view class="section-card">
+        <view class="section-head">
+          <text class="section-title">旅行手记</text>
+          <text class="section-count">{{content.length}}/800</text>
+        </view>
+        <textarea class="content-input" maxlength="800" placeholder="写下路线体验、避坑建议、推荐玩法，发布后会展示在详情页。" value="{{content}}" bindinput="onContentInput" />
+      </view>
+
+      <view class="section-card">
+        <view class="section-head">
+          <text class="section-title">标签</text>
+          <text class="section-count">{{tags.length}}/6</text>
+        </view>
+        <view class="tag-editor">
+          <input class="tag-input" placeholder="输入标签" value="{{tagInput}}" bindinput="onTagInput" confirm-type="done" bindconfirm="addTag" />
+          <button class="tag-add" bindtap="addTag">添加</button>
+        </view>
+        <view class="tag-row selected-tags" wx:if="{{tags.length > 0}}">
+          <view class="tag selected" wx:for="{{tags}}" wx:key="*this" data-tag="{{item}}" bindtap="removeTag">#{{item}}</view>
+        </view>
+        <view class="tag-row">
+          <view class="tag" wx:for="{{hotTags}}" wx:key="*this" data-tag="{{item}}" bindtap="toggleHotTag">#{{item}}</view>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head">
+          <text class="section-title">发布图片</text>
+          <text class="section-count">{{selectedImages.length}}/{{maxImages}}</text>
+        </view>
+        <view class="selected-grid">
+          <view class="selected-item" wx:for="{{selectedImages}}" wx:key="imageUrl">
+            <image wx:if="{{item.mediaType != 'video'}}" src="{{item.imageUrl}}" mode="aspectFill" data-url="{{item.imageUrl}}" bindtap="previewImage" />
+            <video wx:else src="{{item.imageUrl}}" controls="{{false}}" show-center-play-btn="{{false}}" muted object-fit="cover"></video>
+            <view class="cover-badge" wx:if="{{item.imageUrl == coverImage}}">{{item.mediaType == 'video' ? '动态' : '封面'}}</view>
+            <button class="image-remove" data-url="{{item.imageUrl}}" catchtap="removeSelectedImage">×</button>
+            <button class="set-cover" wx:if="{{item.imageUrl != coverImage && item.mediaType != 'video'}}" data-url="{{item.imageUrl}}" catchtap="chooseCover">设封面</button>
+          </view>
+          <view class="upload-card" bindtap="uploadImages" wx:if="{{selectedImages.length < maxImages}}">
+            <text class="upload-plus">+</text>
+            <text>上传图片</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head">
+          <text class="section-title">行程图片候选</text>
+          <text class="section-count">点选加入发布</text>
+        </view>
+        <scroll-view class="candidate-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="candidate-list">
+            <view class="candidate-item {{item.imageUrl == coverImage ? 'cover' : ''}}" wx:for="{{candidateImages}}" wx:key="imageUrl" data-url="{{item.imageUrl}}" bindtap="toggleImage">
+              <image wx:if="{{item.mediaType != 'video'}}" src="{{item.imageUrl}}" mode="aspectFill" />
+              <video wx:else src="{{item.imageUrl}}" controls="{{false}}" show-center-play-btn="{{false}}" muted object-fit="cover"></video>
+              <view class="candidate-check" wx:if="{{item.selected}}">已选</view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+
+    <view class="bottom-bar">
+      <view class="bottom-info">
+        <text>{{selectedImages.length}}张图片</text>
+        <text>{{coverImage ? '已设置封面' : '未设置封面'}}</text>
+      </view>
+      <button class="publish-btn" loading="{{submitting}}" bindtap="submitPublish">保存发布</button>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,208 @@
+/* 拾路派 - 设置页 */
+
+.page {
+  padding: var(--space-page-top) var(--space-page-x) 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  box-sizing: border-box;
+}
+
+.theme-dark.page,
+.page.theme-dark {
+  background: #111318;
+  color: var(--color-text);
+}
+
+/* ---- 卡片 ---- */
+.card {
+  background: var(--color-surface);
+  border-radius: 24rpx;
+  margin-bottom: 20rpx;
+  padding: 8rpx 28rpx;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 16rpx 0 8rpx;
+}
+
+.card-header-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-header-icon.settings { background: var(--color-info-bg); }
+.card-header-icon.pref { background: var(--color-info-bg); }
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+/* ---- 设置项 ---- */
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.setting-item.last {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.setting-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.setting-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.setting-icon.red { background: var(--color-danger-bg); }
+.setting-icon.purple { background: rgba(139, 92, 246, 0.12); }
+.setting-icon.teal { background: rgba(20, 184, 166, 0.12); }
+.setting-icon.yellow { background: var(--color-warning-bg); }
+.setting-icon.blue { background: var(--color-info-bg); }
+.setting-icon.orange { background: var(--color-accent-light); }
+.setting-icon.green { background: var(--color-brand-light); }
+
+.setting-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.setting-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-dark);
+  display: block;
+}
+
+.setting-desc {
+  font-size: 22rpx;
+  color: var(--color-muted);
+  margin-top: 4rpx;
+  display: block;
+}
+
+.setting-arrow {
+  font-size: 40rpx;
+  color: #d0d5dd;
+  font-weight: 300;
+  flex-shrink: 0;
+}
+
+.version-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.version-text {
+  font-size: 24rpx;
+  color: var(--color-muted);
+}
+
+.picker-badge {
+  font-size: 24rpx;
+  color: var(--color-primary);
+  font-weight: 600;
+  background: var(--color-brand-light);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  white-space: nowrap;
+}
+
+/* ---- Switch ---- */
+switch {
+  transform: scale(0.85);
+}
+
+/* ---- 退出登录 ---- */
+.btn-logout {
+  width: 100%;
+  background: var(--color-surface);
+  color: var(--color-danger);
+  border: 2rpx solid var(--color-danger-border);
+  border-radius: 32rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-top: 12rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.04);
+}
+
+.btn-logout::after { border: none; }
+
+/* ---- 版权 ---- */
+.copyright {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  font-size: 22rpx;
+  color: var(--color-placeholder);
+  padding-bottom: 40rpx;
+}
+
+/* ---- SVG Icons ---- */
+.settings-item-icon {
+  width: 32rpx;
+  height: 32rpx;
+  display: block;
+  margin: 16rpx;
+}
+
+.card-header-img {
+  width: 24rpx;
+  height: 24rpx;
+  display: block;
+}
+
+/* ======== 暗色主题 ======== */
+.theme-dark .card {
+  background: var(--color-surface);
+  border: var(--card-border);
+  border-radius: var(--radius-lg);
+}
+
+.theme-dark .card-title,
+.theme-dark .setting-text {
+  color: var(--color-text);
+}
+
+.theme-dark .setting-desc,
+.theme-dark .version-text,
+.theme-dark .copyright {
+  color: var(--color-text-muted);
+}
+
+.theme-dark .setting-arrow {
+  color: var(--color-text-muted);
+}
+
+.theme-dark .setting-item {
+  border-bottom-color: var(--color-divider);
+}
+
+.theme-dark .btn-logout {
+  border-color: var(--color-danger-border);
+}

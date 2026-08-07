@@ -1,0 +1,81 @@
+<!--
+  拾路派 · 登录页 v2.0
+  风格：白色背景 + 项目统一卡片风格
+  功能：微信手机号登录 / 手机号+密码 / 游客模式 / 忘记密码
+-->
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- Logo -->
+  <view class="logo">
+    <image class="logo-icon" src="/images/小程序头像.png" mode="aspectFit"/>
+    <view class="logo-title">拾路派</view>
+    <view class="logo-sub">智能旅行规划</view>
+  </view>
+
+  <!-- 登录卡片 -->
+  <view class="card">
+    <!-- 手机号 -->
+    <view class="field">
+      <input class="field-input" type="number" maxlength="11"
+        placeholder="手机号" value="{{phone}}"
+        bindinput="onPhoneInput" />
+    </view>
+
+    <!-- 密码 -->
+    <view class="field field-pwd">
+      <input class="field-input" password="{{!showPassword}}"
+        maxlength="32" placeholder="密码"
+        bindinput="onPasswordInput" />
+      <view class="field-pwd-toggle" bindtap="togglePassword">
+        {{showPassword ? '隐藏' : '显示'}}
+      </view>
+    </view>
+
+    <!-- 协议 -->
+    <view class="agree">
+      <checkbox-group bindchange="onAgreeChange">
+        <label class="agree-label">
+          <checkbox value="agree" color="#2EC4B6" />
+          <text class="agree-text">同意<text class="agree-link" catchtap="viewAgreement">《用户协议》</text>和<text class="agree-link" catchtap="viewPrivacy">《隐私政策》</text></text>
+        </label>
+      </checkbox-group>
+    </view>
+
+    <!-- 登录/注册按钮 -->
+    <button class="btn-login" bindtap="handleLogin"
+      loading="{{loading}}" disabled="{{loading}}">
+      登录 / 注册
+    </button>
+
+    <!-- 忘记密码 -->
+    <view class="forgot" bindtap="onToggleForgot">
+      <text>忘记密码？</text>
+    </view>
+  </view>
+
+  <!-- 忘记密码（内联展开） -->
+  <view class="card" wx:if="{{showForgot}}">
+    <view class="forgot-header">
+      <text class="forgot-title">重置密码</text>
+      <text class="forgot-desc">通过微信验证身份，无需短信</text>
+    </view>
+    <view class="field">
+      <input class="field-input" type="number" maxlength="11"
+        placeholder="注册手机号" value="{{resetPhone}}"
+        bindinput="onResetPhoneInput" />
+    </view>
+    <view class="field">
+      <input class="field-input" type="password" maxlength="32"
+        placeholder="新密码（6-32位）"
+        bindinput="onResetPasswordInput" />
+    </view>
+    <button class="btn-login" bindtap="handleResetPassword"
+      loading="{{resetLoading}}" disabled="{{resetLoading}}">
+      验证并重置
+    </button>
+    <view class="forgot-cancel" bindtap="onToggleForgot">取消</view>
+  </view>
+
+
+
+</view>

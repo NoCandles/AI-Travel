@@ -1,0 +1,16 @@
+<cover-view class="picker-overlay" wx:if="{{visible}}" bindtap="onTapOverlay">
+  <cover-view class="picker-content" catchtap="">
+    <cover-view class="picker-title">选择路线方案</cover-view>
+    <cover-view
+      class="picker-item {{currentIndex === item.index ? 'picker-active' : ''}}"
+      wx:for="{{paths}}"
+      wx:key="index"
+      data-index="{{item.index}}"
+      catchtap="onSelect"
+    >
+      <cover-view class="picker-item-label">{{item.label}}</cover-view>
+      <cover-view class="picker-item-meta">{{item.distanceText}} · {{item.durationText}}</cover-view>
+      <cover-image class="picker-item-check" wx:if="{{currentIndex === item.index}}" src="/images/icons/check.svg"></cover-image>
+    </cover-view>
+  </cover-view>
+</cover-view>

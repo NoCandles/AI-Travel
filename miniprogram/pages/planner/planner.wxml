@@ -1,0 +1,442 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- 顶部标题 -->
+  <view class="page-header">
+    <text class="page-title">{{isEdit ? '行程工作台' : '新建行程'}}</text>
+    <text class="page-desc">{{isEdit ? '编排路线、整理素材并发布到广场' : '创建一个全新的旅行计划'}}</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <view class="studio-tabs" wx:if="{{isEdit}}">
+      <view class="studio-tab {{studioTab == 'route' ? 'active' : ''}}" data-tab="route" bindtap="switchStudioTab">行程编辑</view>
+      <view class="studio-tab {{studioTab == 'assets' ? 'active' : ''}}" data-tab="assets" bindtap="switchStudioTab">发布编辑</view>
+      <view class="studio-tab {{studioTab == 'publish' ? 'active' : ''}}" data-tab="publish" bindtap="switchStudioTab">发布预览</view>
+    </view>
+
+    <block wx:if="{{studioTab == 'route' || !isEdit}}">
+    <!-- ══════ 基本信息（单卡片） ══════ -->
+    <view class="section-label section-head">
+      <view>
+        <text class="section-title">基本信息</text>
+      </view>
+      <text class="section-chip">{{daysCount}}天{{daysCount - 1}}晚</text>
+    </view>
+    <view class="info-card info-card-source">
+      <view class="source-summary">
+        <view class="source-summary-main">
+          <text class="source-kicker">行程源信息</text>
+          <text class="source-title">{{name || destination || '未命名行程'}}</text>
+          <text class="source-meta">{{destination || '目的地待填写'}} · {{startDate || '出发日期'}} 至 {{endDate || '返回日期'}}</text>
+        </view>
+        <view class="source-budget">
+          <text class="source-budget-label">预算</text>
+          <text class="source-budget-value">{{customBudget ? '¥' + customBudget : budgetOptions[budgetIndex]}}</text>
+        </view>
+      </view>
+      <view class="form-divider"></view>
+      <!-- 行程名称 -->
+      <view class="form-row">
+        <text class="form-label">行程名称</text>
+        <input class="form-input" placeholder="给你的旅程起个名字" value="{{name}}" bindinput="onNameInput" placeholder-class="form-placeholder" />
+      </view>
+      <view class="form-divider"></view>
+      <!-- 目的地 -->
+      <view class="form-row">
+        <text class="form-label">目的地</text>
+        <input class="form-input" placeholder="想去哪里？" value="{{destination}}" bindinput="onDestinationInput" placeholder-class="form-placeholder" />
+      </view>
+      <view class="form-divider"></view>
+      <!-- 日期 -->
+      <view class="form-row form-row-block">
+        <text class="form-label">行程日期</text>
+        <view class="date-row">
+          <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+            <view class="date-pill">
+              <text class="date-pill-label">出发</text>
+              <text class="date-pill-value">{{startDate || '选择日期'}}</text>
+            </view>
+          </picker>
+          <text class="date-sep">—</text>
+          <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+            <view class="date-pill date-pill-end">
+              <text class="date-pill-label">返回</text>
+              <text class="date-pill-value">{{endDate || '选择日期'}}</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+      <view class="form-divider"></view>
+      <!-- 预算 & 天数 -->
+      <view class="form-row form-row-inline">
+        <view class="inline-field">
+          <text class="form-label">预算</text>
+          <picker mode="selector" range="{{budgetOptions}}" value="{{budgetIndex}}" bindchange="onBudgetPick">
+            <view class="select-pill">{{budgetOptions[budgetIndex]}} <text class="select-arrow">▾</text></view>
+          </picker>
+        </view>
+        <view class="inline-field">
+          <text class="form-label">天数</text>
+          <view class="days-display">{{daysCount}}天{{daysCount - 1}}晚</view>
+        </view>
+      </view>
+      <view class="advanced-toggle" bindtap="toggleAdvancedOptions">
+        <text>更多偏好与预算</text>
+        <text class="advanced-toggle-state">{{showAdvancedOptions ? '收起' : '展开'}}</text>
+      </view>
+      <view class="form-divider" wx:if="{{!customBudget && showAdvancedOptions}}"></view>
+      <block wx:if="{{showAdvancedOptions || customBudget}}">
+      <!-- 自定义预算（可选，折叠在预算行下方） -->
+      <view class="form-row budget-row">
+        <view class="budget-inline">
+          <text class="form-label">总预算</text>
+          <view class="budget-input-group">
+            <text class="budget-yen">¥</text>
+            <input class="budget-input" type="number" placeholder="可选，输入总金额" value="{{customBudget}}" bindinput="onCustomBudgetInput" placeholder-class="form-placeholder" />
+            <view class="budget-clear" wx:if="{{customBudget}}" bindtap="clearCustomBudget">✕</view>
+          </view>
+        </view>
+      </view>
+      <view class="form-divider"></view>
+      <!-- 描述 -->
+      <view class="form-row form-row-block">
+        <text class="form-label">行程描述</text>
+        <view class="textarea-wrap">
+          <textarea class="form-textarea" placeholder="简单描述你的旅行计划..." value="{{description}}" bindinput="onDescriptionInput" maxlength="200" placeholder-class="form-placeholder" />
+          <text class="textarea-count">{{description.length || 0}}/200</text>
+        </view>
+      </view>
+      </block>
+    </view>
+
+    <!-- ══════ 路线编辑（编辑模式） ══════ -->
+    <block wx:if="{{isEdit && trip.days && trip.days.length}}">
+      <view class="section-label section-head">
+      <view>
+          <text class="section-title">每日路线</text>
+        </view>
+        <text class="section-chip">{{trip.days.length}}天</text>
+      </view>
+
+      <view class="day-card" wx:for="{{trip.days}}" wx:key="id" wx:for-index="dayIdx">
+        <!-- 折叠头部 -->
+        <view class="day-head {{expandedDay === dayIdx ? 'day-head-open' : ''}}" bindtap="toggleEditDay" data-index="{{dayIdx}}">
+          <view class="day-head-left">
+            <view class="day-num day-num-{{dayIdx === 0 ? 'first' : (dayIdx === trip.days.length - 1 ? 'last' : 'mid')}}">
+              <text>{{item.day}}</text>
+            </view>
+            <view class="day-head-info">
+              <text class="day-head-title">第{{item.day}}天</text>
+              <text class="day-head-sub" wx:if="{{expandedDay !== dayIdx && item.spots}}">{{item.spots.length}}个景点{{item.hotelName ? ' · 有酒店' : ''}}</text>
+              <view class="day-head-tags" wx:if="{{expandedDay !== dayIdx}}">
+                <text class="day-head-tag" wx:if="{{item.weather}}">{{item.weather}}</text>
+                <text class="day-head-tag" wx:if="{{item.temperature}}">{{item.temperature}}</text>
+                <text class="day-head-tag" wx:if="{{item.hotelName}}">住宿已安排</text>
+              </view>
+            </view>
+          </view>
+          <view class="day-head-right">
+            <text class="day-badge" wx:if="{{expandedDay !== dayIdx && item.spots}}">{{item.spots.length}}景</text>
+            <text class="day-arrow">{{expandedDay === dayIdx ? '▴' : '▾'}}</text>
+          </view>
+        </view>
+
+        <!-- 展开内容 -->
+        <view class="day-body" wx:if="{{expandedDay === dayIdx}}">
+          <view class="route-change-notice" wx:if="{{routeChangeNotice}}">{{routeChangeNotice}}</view>
+          <!-- 天气 -->
+          <view class="day-meta">
+            <text class="meta-lbl">天气</text>
+            <input class="meta-inp" placeholder="晴" value="{{item.weather}}" data-day="{{dayIdx}}" data-field="weather" bindinput="onDayFieldChange" />
+            <text class="meta-lbl">温度</text>
+            <input class="meta-inp meta-inp-short" placeholder="25°C" value="{{item.temperature}}" data-day="{{dayIdx}}" data-field="temperature" bindinput="onDayFieldChange" />
+          </view>
+
+          <!-- 景点列表 -->
+          <text class="sub-label">景点安排</text>
+          <view class="spot-item" wx:for="{{item.spots}}" wx:key="id" wx:for-index="spotIdx">
+            <view class="spot-bar" catchtap="toggleEditSpot" data-day="{{dayIdx}}" data-spot="{{spotIdx}}">
+              <view class="spot-sort-btns">
+                <view class="spot-sort-btn up {{spotIdx === 0 ? 'disabled' : ''}}" catchtap="moveSpotUp" data-day="{{dayIdx}}" data-spot="{{spotIdx}}" wx:if="{{spotIdx > 0}}">
+                  <text>▴</text>
+                </view>
+                <view class="spot-sort-btn down {{spotIdx >= item.spots.length - 1 ? 'disabled' : ''}}" catchtap="moveSpotDown" data-day="{{dayIdx}}" data-spot="{{spotIdx}}" wx:if="{{spotIdx < item.spots.length - 1}}">
+                  <text>▾</text>
+                </view>
+              </view>
+              <view class="spot-idx">{{spotIdx + 1}}</view>
+              <view class="spot-info">
+                <text class="spot-name">{{item.name || '未命名'}}</text>
+                <text class="spot-meta" wx:if="{{item.arrivalTime || item.duration}}">{{item.arrivalTime || ''}}{{item.arrivalTime && item.duration ? ' · ' : ''}}{{item.duration || ''}}{{item.duration ? '小时' : ''}}</text>
+              </view>
+              <text class="spot-action">{{item._spotExpanded ? '收起' : '编辑'}}</text>
+            </view>
+
+            <view class="spot-form" wx:if="{{item._spotExpanded}}">
+              <view class="spot-image-editor">
+                <image class="spot-image-preview" wx:if="{{item.image || item.coverImage}}" src="{{item.image || item.coverImage}}" mode="aspectFill" />
+                <view class="spot-image-empty" wx:else>暂无图片</view>
+                <view class="spot-image-actions">
+                  <button class="spot-image-btn primary" catchtap="uploadSpotImage" data-day="{{dayIdx}}" data-spot="{{spotIdx}}">{{item.image || item.coverImage ? '更换图片' : '上传图片'}}</button>
+                  <button class="spot-image-btn" catchtap="setSpotAsCover" data-day="{{dayIdx}}" data-spot="{{spotIdx}}">设为封面</button>
+                </view>
+              </view>
+              <view class="sf-row"><text class="sf-lbl">名称</text><input class="sf-inp" value="{{item.name}}" placeholder="景点名称" data-day="{{dayIdx}}" data-spot="{{spotIdx}}" data-field="name" bindinput="onSpotFieldChange"/></view>
+              <view class="sf-row"><text class="sf-lbl">时间</text><input class="sf-inp" value="{{item.arrivalTime}}" placeholder="09:00" data-day="{{dayIdx}}" data-spot="{{spotIdx}}" data-field="arrivalTime" bindinput="onSpotFieldChange"/></view>
+              <view class="sf-row"><text class="sf-lbl">时长</text><input class="sf-inp" value="{{item.duration}}" placeholder="小时" data-day="{{dayIdx}}" data-spot="{{spotIdx}}" data-field="duration" bindinput="onSpotFieldChange" /><text class="sf-suffix">小时</text></view>
+              <view class="sf-row"><text class="sf-lbl">地址</text><input class="sf-inp" value="{{item.address}}" placeholder="地址" data-day="{{dayIdx}}" data-spot="{{spotIdx}}" data-field="address" bindinput="onSpotFieldChange"/></view>
+              <view class="sf-row"><text class="sf-lbl">费用</text><input class="sf-inp" value="{{item.cost}}" placeholder="免费" data-day="{{dayIdx}}" data-spot="{{spotIdx}}" data-field="cost" bindinput="onSpotFieldChange"/></view>
+              <view class="sf-row"><text class="sf-lbl">贴士</text><input class="sf-inp" value="{{item.tips}}" placeholder="游玩建议" data-day="{{dayIdx}}" data-spot="{{spotIdx}}" data-field="tips" bindinput="onSpotFieldChange"/></view>
+              <view class="sf-row sf-row-col">
+                <text class="sf-lbl sf-lbl-top">游玩推荐</text>
+                <textarea class="sf-textarea" value="{{item.travelGuide}}" placeholder="分享游玩攻略、最佳路线、拍照点等..." data-day="{{dayIdx}}" data-spot="{{spotIdx}}" data-field="travelGuide" bindinput="onSpotFieldChange" maxlength="500"></textarea>
+              </view>
+              <view class="sf-actions">
+                <button class="sf-btn-save" catchtap="saveSpotChanges" data-day="{{dayIdx}}" data-spot="{{spotIdx}}">保存</button>
+                <button class="sf-btn-del" catchtap="confirmDeleteSpot" data-day="{{dayIdx}}" data-spot="{{spotIdx}}">删除</button>
+              </view>
+            </view>
+          </view>
+
+          <view class="no-spots" wx:if="{{!item.spots || item.spots.length === 0}}">
+            <text>暂无景点，点击下方添加</text>
+          </view>
+
+          <!-- 添加景点 -->
+          <view class="add-spot-area" wx:if="{{!item._addingSpot}}">
+            <button class="btn-add-spot" catchtap="showAddSpotInput" data-day="{{dayIdx}}">+ 添加景点</button>
+          </view>
+          <view class="add-spot-form" wx:if="{{item._addingSpot}}">
+            <input class="add-inp" placeholder="景点名称" value="{{item._newSpotName || ''}}" data-day="{{dayIdx}}" bindinput="onNewSpotNameInput" confirm-type="done" bindconfirm="confirmAddSpot" data-day="{{dayIdx}}" />
+            <view class="add-actions">
+              <button class="add-btn-confirm" catchtap="confirmAddSpot" data-day="{{dayIdx}}">添加</button>
+              <button class="add-btn-cancel" catchtap="cancelAddSpot" data-day="{{dayIdx}}">取消</button>
+            </view>
+          </view>
+
+          <!-- 酒店 -->
+          <text class="sub-label">住宿推荐</text>
+          <view class="hotel-form">
+            <view class="sf-row"><text class="sf-lbl">名称</text><input class="sf-inp" value="{{item.hotelName}}" placeholder="酒店名称" data-day="{{dayIdx}}" data-field="hotelName" bindinput="onDayFieldChange"/></view>
+            <view class="sf-row"><text class="sf-lbl">详情</text><input class="sf-inp" value="{{item.hotelDetail}}" placeholder="酒店详情" data-day="{{dayIdx}}" data-field="hotelDetail" bindinput="onDayFieldChange"/></view>
+            <view class="sf-row"><text class="sf-lbl">价格</text><input class="sf-inp" type="number" value="{{item.hotelPrice}}" placeholder="价格" data-day="{{dayIdx}}" data-field="hotelPrice" bindinput="onDayFieldChange"/></view>
+            <view class="hotel-actions">
+              <button class="hotel-btn-pick" catchtap="selectHotel" data-day="{{dayIdx}}">选择酒店</button>
+              <button class="hotel-btn-save" catchtap="saveDayChanges" data-day="{{dayIdx}}">保存当天</button>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 提示 -->
+    <view class="tip-bar" wx:if="{{!isEdit}}">
+      <image class="tip-icon" src="/images/icons/info.svg" mode="aspectFit" />
+      <text>创建后可在"我的行程"中详细编辑每日安排</text>
+    </view>
+    </block>
+
+    <block wx:if="{{isEdit && studioTab == 'assets'}}">
+      <view class="section-label">行程封面</view>
+      <view class="asset-cover-card">
+        <image class="asset-cover-image" src="{{publishCoverImage || trip.coverImage || 'https://picsum.photos/id/1031/750/520'}}" mode="aspectFill" />
+        <view class="asset-cover-copy">
+          <text class="asset-cover-title">{{name || destination || '未命名行程'}}</text>
+          <text class="asset-cover-sub">{{destination || publishLocation || '旅行目的地'}} · {{publishDays || daysCount}}天{{publishNights || daysCount - 1}}晚</text>
+        </view>
+      </view>
+
+      <view class="section-label">已选择发布图</view>
+      <view class="asset-card">
+        <view class="asset-grid">
+          <view class="asset-item" wx:for="{{selectedImages}}" wx:key="imageUrl">
+            <image wx:if="{{item.mediaType != 'video'}}" src="{{item.imageUrl}}" mode="aspectFill" />
+            <video wx:else src="{{item.imageUrl}}" controls="{{false}}" show-center-play-btn="{{false}}" muted object-fit="cover"></video>
+            <view class="asset-badge" wx:if="{{item.imageUrl == publishCoverImage}}">封面</view>
+            <button class="asset-remove" data-url="{{item.imageUrl}}" catchtap="removeStudioSelectedImage">×</button>
+            <button class="asset-cover-btn" wx:if="{{item.imageUrl != publishCoverImage && item.mediaType != 'video'}}" data-url="{{item.imageUrl}}" catchtap="chooseStudioCover">设封面</button>
+          </view>
+          <view class="asset-upload" bindtap="uploadStudioImages" wx:if="{{selectedImages.length < maxImages}}">
+            <text class="asset-upload-plus">+</text>
+            <text>上传图片/Video</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="section-label">行程图片候选</view>
+      <view class="asset-card">
+        <scroll-view class="candidate-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+          <view class="candidate-list">
+            <view class="candidate-item {{item.imageUrl == publishCoverImage ? 'cover' : ''}}" wx:for="{{candidateImages}}" wx:key="imageUrl" data-url="{{item.imageUrl}}" bindtap="toggleStudioImage">
+              <image wx:if="{{item.mediaType != 'video'}}" src="{{item.imageUrl}}" mode="aspectFill" />
+              <video wx:else src="{{item.imageUrl}}" controls="{{false}}" show-center-play-btn="{{false}}" muted object-fit="cover"></video>
+              <view class="candidate-check" wx:if="{{item.selected}}">已选</view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+
+      <view class="section-label section-head">
+        <view>
+          <text class="section-title">发布信息</text>
+        </view>
+        <text class="section-chip">文案标签</text>
+      </view>
+      <view class="info-card publish-form-card publish-copy-card">
+        <view class="publish-sync-note">
+          <view>
+            <text class="publish-sync-title">{{name || destination || '未命名行程'}}</text>
+            <text class="publish-sync-sub">{{publishLocation || destination || '目的地'}} · {{publishDays || daysCount}}天{{publishNights || daysCount - 1}}晚</text>
+          </view>
+          <text class="publish-sync-badge">标题同步</text>
+        </view>
+        <view class="form-divider"></view>
+        <view class="form-row form-row-block compact-copy-row">
+          <view class="form-label-row">
+            <text class="form-label">行程亮点</text>
+            <text class="form-hint">为空时使用行程描述</text>
+          </view>
+          <textarea class="studio-textarea small" maxlength="120" auto-height placeholder="一句话介绍路线亮点" value="{{publishDescription}}" bindinput="onPublishDescInput" />
+        </view>
+        <view class="form-divider"></view>
+        <view class="form-row form-row-block compact-copy-row">
+          <text class="form-label">旅行手记</text>
+          <textarea class="studio-textarea" maxlength="800" placeholder="写下路线体验、避坑建议、推荐玩法..." value="{{publishContent}}" bindinput="onPublishContentInput" />
+        </view>
+        <view class="form-divider"></view>
+        <view class="form-row form-row-block compact-copy-row">
+          <view class="form-label-row">
+            <text class="form-label">标签</text>
+            <text class="form-hint">用于广场筛选和推荐</text>
+          </view>
+          <view class="tag-editor">
+            <input class="tag-input" placeholder="输入标签" value="{{publishTagInput}}" bindinput="onPublishTagInput" confirm-type="done" bindconfirm="addPublishTag" />
+            <button class="tag-add" bindtap="addPublishTag">添加</button>
+          </view>
+          <view class="tag-row" wx:if="{{publishTags.length > 0}}">
+            <view class="tag selected" wx:for="{{publishTags}}" wx:key="*this" data-tag="{{item}}" bindtap="removePublishTag">#{{item}}</view>
+          </view>
+          <view class="tag-row">
+            <view class="tag" wx:for="{{hotTags}}" wx:key="*this" data-tag="{{item}}" bindtap="togglePublishHotTag">#{{item}}</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <block wx:if="{{isEdit && studioTab == 'publish'}}">
+      <view class="publish-preview-card">
+        <image class="publish-preview-cover" src="{{publishCoverImage || trip.coverImage || 'https://picsum.photos/id/1031/750/520'}}" mode="aspectFill" />
+        <view class="publish-preview-shade"></view>
+        <view class="publish-preview-copy">
+          <text class="publish-preview-meta">{{publishLocation || destination || '旅行目的地'}} · {{publishDays || daysCount}}天{{publishNights || daysCount - 1}}晚</text>
+          <text class="publish-preview-title">{{name || destination || '未命名行程'}}</text>
+        </view>
+      </view>
+
+      <view class="section-label section-head">
+        <view>
+          <text class="section-title">发布预览</text>
+        </view>
+        <text class="section-chip">确认发布</text>
+      </view>
+      <view class="asset-card publish-read-card">
+        <text class="publish-read-kicker">广场卡片预览</text>
+        <text class="publish-read-title">{{name || destination || '未命名行程'}}</text>
+        <text class="publish-read-meta">{{publishLocation || destination || '目的地'}} · {{publishDays || daysCount}}天{{publishNights || daysCount - 1}}晚</text>
+        <text class="publish-read-desc">{{publishDescription || description || '暂无行程亮点'}}</text>
+        <text class="publish-read-content">{{publishContent || '暂无旅行手记'}}</text>
+        <view class="tag-row" wx:if="{{publishTags.length > 0}}">
+          <view class="tag selected readonly" wx:for="{{publishTags}}" wx:key="*this">#{{item}}</view>
+        </view>
+      </view>
+
+      <view class="section-label">旅途照片预览</view>
+      <swiper class="studio-gallery" indicator-dots="{{selectedImages.length > 1}}" circular="{{selectedImages.length > 1}}">
+        <swiper-item wx:for="{{selectedImages}}" wx:key="imageUrl">
+          <view class="studio-gallery-slide">
+            <image wx:if="{{item.mediaType != 'video'}}" src="{{item.imageUrl}}" mode="aspectFill" />
+            <video wx:else src="{{item.imageUrl}}" controls object-fit="cover"></video>
+            <view class="asset-badge" wx:if="{{item.mediaType == 'video'}}">Live</view>
+          </view>
+        </swiper-item>
+      </swiper>
+    </block>
+
+    <!-- ══════ 底部主操作 ══════ -->
+    <view class="bottom-bar">
+      <view class="bottom-bar-inner">
+        <!-- 主按钮 -->
+        <view class="bottom-main" wx:if="{{studioTab == 'route' || !isEdit}}">
+          <view class="more-btn" wx:if="{{isEdit}}" bindtap="openMoreActions"><text>更多</text></view>
+          <button class="btn-primary" bindtap="saveTrip">{{isEdit ? '保存修改' : '创建行程'}}</button>
+          <button class="btn-accent btn-brand" wx:if="{{isEdit}}" bindtap="switchStudioTab" data-tab="assets">下一步</button>
+        </view>
+        <view class="bottom-main" wx:elif="{{studioTab == 'assets'}}">
+          <view class="more-btn" bindtap="openMoreActions"><text>更多</text></view>
+          <button class="btn-primary" bindtap="uploadStudioImages">上传素材</button>
+          <button class="btn-accent btn-brand" bindtap="switchStudioTab" data-tab="publish">预览发布</button>
+        </view>
+        <view class="bottom-main" wx:else>
+          <view class="more-btn" bindtap="openMoreActions"><text>更多</text></view>
+          <button class="btn-primary" bindtap="switchStudioTab" data-tab="assets">返回编辑</button>
+          <button class="btn-accent btn-brand" loading="{{submittingPublish}}" bindtap="submitStudioPublish">{{publishId ? '更新发布' : '发布到广场'}}</button>
+        </view>
+      </view>
+    </view>
+    <!-- 底部占位，防止内容被遮挡 -->
+    <view class="bottom-spacer"></view>
+  </block>
+
+  <!-- 版本管理弹窗 -->
+  <view class="version-overlay {{showVersionPanel ? 'show' : ''}}" bindtap="closeVersionPanel">
+    <view class="version-panel" catchtap="">
+      <view class="version-header">
+        <text class="version-title">版本管理</text>
+        <view class="version-close" bindtap="closeVersionPanel">
+          <image src="/images/icons/close.svg" mode="aspectFill"/>
+        </view>
+      </view>
+      <view class="version-current">
+        <text class="version-current-label">当前版本</text>
+        <button class="version-save-btn" bindtap="saveCurrentVersion">+ 保存快照</button>
+      </view>
+      <view class="version-list" wx:if="{{versions.length > 0}}">
+        <view class="version-item" wx:for="{{versions}}" wx:key="id">
+          <view class="version-info">
+            <text class="version-name">{{item.name || '未命名'}}</text>
+            <text class="version-note" wx:if="{{item.description}}">{{item.description}}</text>
+          </view>
+          <button class="version-restore-btn" bindtap="restoreVersion" data-id="{{item.id}}" data-name="{{item.name || '未命名'}}">恢复</button>
+        </view>
+      </view>
+      <view class="version-empty" wx:else><text>暂无历史版本</text></view>
+    </view>
+  </view>
+
+  <!-- 素材选择弹窗 -->
+  <view class="material-overlay {{showMaterialPicker ? 'show' : ''}}" bindtap="closeMaterialPicker">
+    <view class="material-panel" catchtap="">
+      <view class="material-header">
+        <text class="material-title">选择图片素材</text>
+        <view class="material-close" bindtap="closeMaterialPicker">
+          <text>✕</text>
+        </view>
+      </view>
+      <scroll-view class="material-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="material-grid">
+          <view class="material-item" wx:for="{{candidateImages}}" wx:key="imageUrl" data-url="{{item.imageUrl}}" bindtap="selectMaterialForSpot" wx:if="{{item.mediaType != 'video'}}">
+            <image src="{{item.imageUrl}}" mode="aspectFill" />
+          </view>
+        </view>
+        <view class="material-empty" wx:if="{{!candidateImages.length}}">
+          <text>暂无可用素材</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

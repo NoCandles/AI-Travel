@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "chat-fab": "/components/chat-fab/chat-fab"
+  },
+  "navigationBarTitleText": "发现",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#FFFFFF"
+}

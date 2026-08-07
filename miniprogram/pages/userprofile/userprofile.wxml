@@ -1,0 +1,79 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="profile-header">
+    <image class="cover-img" src="{{coverImage || 'https://picsum.photos/id/1031/750/430'}}" mode="aspectFill" />
+    <view class="cover-overlay"></view>
+    <view class="profile-info">
+      <image class="avatar-img" src="{{profile.avatar || '/images/icons/user.svg'}}" mode="aspectFill" />
+      <view class="profile-main">
+        <text class="profile-name">{{profile.nickname || '旅行家'}}</text>
+        <text class="profile-id">拾路派号：{{shortId || '---'}}</text>
+        <text class="profile-signature">{{profile.signature || '这个旅行家还没有写签名'}}</text>
+        <view class="profile-tags">
+          <view class="profile-tag" wx:if="{{profile.city || profile.province}}">
+            <image class="tag-icon" src="/images/icons/location-pin.svg" mode="aspectFit" />
+            <text>{{profile.city || profile.province}}</text>
+          </view>
+          <view class="profile-tag" wx:if="{{profile.gender === 1}}">男</view>
+          <view class="profile-tag" wx:if="{{profile.gender === 2}}">女</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-row" wx:if="{{!isSelf}}">
+    <button class="action-btn follow {{isFollowed ? 'followed' : ''}}" bindtap="toggleFollow">{{isFollowed ? '已关注' : '关注'}}</button>
+    <button class="action-btn message" bindtap="sendMessage">发私信</button>
+  </view>
+
+  <view class="profile-stats">
+    <view class="profile-stat-item">
+      <text class="profile-stat-num">{{stats.totalLikes || 0}}</text>
+      <text class="profile-stat-label">获赞</text>
+    </view>
+    <view class="profile-stat-item">
+      <text class="profile-stat-num">{{stats.publishCount || 0}}</text>
+      <text class="profile-stat-label">发布</text>
+    </view>
+    <view class="profile-stat-item" bindtap="viewFollowing">
+      <text class="profile-stat-num">{{stats.followingCount || 0}}</text>
+      <text class="profile-stat-label">关注</text>
+    </view>
+    <view class="profile-stat-item" bindtap="viewFollowers">
+      <text class="profile-stat-num">{{stats.followerCount || 0}}</text>
+      <text class="profile-stat-label">粉丝</text>
+    </view>
+  </view>
+
+  <view class="content-shell">
+    <view class="content-tabs">
+      <view class="content-tab active">TA 的路线</view>
+    </view>
+
+    <view class="route-grid">
+      <view class="route-card" wx:for="{{routes}}" wx:key="id" data-id="{{item.id}}" bindtap="viewRouteDetail">
+        <image class="route-cover" src="{{item.coverImage || 'https://picsum.photos/id/1031/360/220'}}" mode="aspectFill" />
+        <view class="route-body">
+          <text class="route-title">{{item.title}}</text>
+          <view class="route-meta">
+            <image class="route-meta-icon" src="/images/icons/location-pin.svg" mode="aspectFit" />
+            <text>{{item.location}}</text>
+          </view>
+          <view class="route-footer">
+            <view class="route-count">
+              <image class="route-count-icon" src="/images/icons/love-full.svg" mode="aspectFit" />
+              <text>{{item.likeCount || 0}}</text>
+            </view>
+            <text class="route-days">{{item.days || 0}}天</text>
+          </view>
+        </view>
+      </view>
+      <view class="profile-empty" wx:if="{{!loading && routes.length === 0}}">
+        <image class="profile-empty-icon" src="/images/icons/clipboard-list.svg" mode="aspectFit" />
+        <text class="profile-empty-title">TA 还没有公开路线</text>
+        <text class="profile-empty-desc">等 TA 分享旅行灵感吧</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="loading-state" wx:if="{{loading}}">加载中...</view>
+</view>

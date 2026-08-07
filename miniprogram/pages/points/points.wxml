@@ -1,0 +1,85 @@
+<view class="points-page {{darkMode ? 'theme-dark' : ''}}">
+  <!-- 未登录 -->
+  <view class="login-card" wx:if="{{!isLoggedIn}}">
+    <image class="login-icon" src="/images/icons/user.svg" mode="aspectFit" />
+    <text class="login-title">登录后查看积分</text>
+    <text class="login-desc">登录即可签到赚积分、解锁专属权益</text>
+    <button class="login-btn" bindtap="goLogin">立即登录</button>
+  </view>
+
+  <!-- 已登录 -->
+  <block wx:else>
+  <!-- 积分卡片 -->
+  <view class="points-card">
+    <view class="points-header">
+      <view class="level-badge">L{{levelConfig.level || 1}}</view>
+      <text class="level-title">{{levelConfig.title || '旅游新手'}}</text>
+    </view>
+    <view class="points-body">
+      <text class="points-label">可用积分</text>
+      <text class="points-value">{{points.availablePoints || 0}}</text>
+    </view>
+    <view class="points-details">
+      <view class="detail-item">
+        <text class="detail-value">{{points.totalPoints || 0}}</text>
+        <text class="detail-label">累计获取</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-value">{{points.usedPoints || 0}}</text>
+        <text class="detail-label">已使用</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-value">{{signInStreak || 0}}</text>
+        <text class="detail-label">连续签到</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 签到按钮 -->
+  <view class="sign-in-section">
+    <button class="sign-in-btn {{todaySigned ? 'disabled' : ''}}" 
+            bindtap="doSignIn" disabled="{{todaySigned}}">
+      {{todaySigned ? '今日已签到 ✓' : '立即签到 +5积分'}}
+    </button>
+  </view>
+  
+  <!-- 赚取积分 -->
+  <view class="earn-section">
+    <view class="section-title">赚取积分</view>
+    <view class="earn-list">
+      <view class="earn-item" wx:for="{{earnTasks}}" wx:key="source">
+        <view class="earn-left">
+          <view class="earn-info">
+            <text class="earn-name">{{item.name}}</text>
+            <text class="earn-desc">{{item.description}}</text>
+          </view>
+        </view>
+        <view class="earn-right">
+          <text class="earn-points">+{{item.points}}</text>
+          <view class="earn-btn" data-source="{{item.source}}" bindtap="goTask">去完成</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 积分记录 -->
+  <view class="records-section">
+    <view class="section-title">积分明细</view>
+    <view class="records-list">
+      <view class="record-item" wx:for="{{records}}" wx:key="id">
+        <view class="record-info">
+          <text class="record-desc">{{item.description}}</text>
+          <text class="record-time">{{item.createdAt}}</text>
+        </view>
+        <text class="record-value {{item.type === 'earn' ? 'earn' : 'spend'}}">
+          {{item.type === 'earn' ? '+' : ''}}{{item.changeValue}}
+        </text>
+      </view>
+    </view>
+    
+    <view class="no-records" wx:if="{{records.length === 0}}">
+      <text>暂无积分记录</text>
+    </view>
+  </view>
+  </block>
+</view>

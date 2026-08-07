@@ -1,0 +1,310 @@
+/* ============================================
+   拾路派 Design Token System v2.0
+   🚨 唯一 Token 源 — 所有页面 @import 本文件
+   🚨 禁止任何页面在 page{} 中覆盖以下变量
+   ============================================ */
+
+page {
+  /* ═══════════════════════════════════════════
+     🎨 COLOR — Brand
+     ═══════════════════════════════════════════ */
+  --color-brand:        #2EC4B6;
+  --color-brand-deep:   #1EA88E;
+  --color-brand-light:  #E0F7F0;
+  --color-brand-glow:   rgba(46, 196, 182, 0.2);
+  --color-brand-10:     rgba(46, 196, 182, 0.1);
+  --color-brand-20:     rgba(46, 196, 182, 0.2);
+  --color-brand-12:     rgba(46, 196, 182, 0.12);
+  --color-brand-30:     rgba(46, 196, 182, 0.3);
+
+  /* ═══════════════════════════════════════════
+     🎨 COLOR — Accent
+     ═══════════════════════════════════════════ */
+  --color-accent:       #EA580C;
+  --color-accent-light: #FFF3E0;
+
+  /* ═══════════════════════════════════════════
+     🎨 COLOR — Semantic
+     ═══════════════════════════════════════════ */
+  --color-danger:       #EF4444;
+  --color-danger-bg:    #FEF2F2;
+  --color-danger-border:#FECACA;
+
+  --color-warning:       #F59E0B;
+  --color-warning-bg:    #FFFBEB;
+  --color-warning-border:#FDE68A;
+
+  --color-success:       #10B981;
+  --color-success-bg:    #ECFDF5;
+  --color-success-border:#A7F3D0;
+
+  --color-info:          #3B82F6;
+  --color-info-bg:       #EFF6FF;
+  --color-info-border:   #BFDBFE;
+
+  /* ═══════════════════════════════════════════
+     🎨 COLOR — Surface / Background
+     ═══════════════════════════════════════════ */
+  --color-surface:      #FFFFFF;
+  --color-surface-alt:  #FAFAFA;   /* 浅灰背景 */
+  --color-surface-input:#F8F8F8;   /* 极浅灰输入框 */
+  --color-surface-hover:rgba(0, 0, 0, 0.02);
+
+  /* ═══════════════════════════════════════════
+     🎨 COLOR — Text
+     ═══════════════════════════════════════════ */
+  --color-text:          #1A1A2E;
+  --color-text-secondary:#5A6A7A;
+  --color-text-muted:    #8A9AAA;
+  --color-text-inverse:  #FFFFFF;
+  --color-text-brand:    #2EC4B6;
+  --color-text-danger:   #EF4444;
+
+  /* ═══════════════════════════════════════════
+     🎨 COLOR — Border / Divider
+     ═══════════════════════════════════════════ */
+  --color-border:        #EBEBEB;   /* 更浅的边框 */
+  --color-border-light:  #F3F3F3;
+  --color-divider:       #F3F3F3;
+
+  /* ═══════════════════════════════════════════
+     🎨 COLOR — Glassmorphism
+     ═══════════════════════════════════════════ */
+  --glass-bg:            rgba(255, 255, 255, 0.72);
+  --glass-blur:          16px;
+  --glass-border:        rgba(255, 255, 255, 0.25);
+  --glass-shadow:        0 4rpx 20rpx rgba(0, 0, 0, 0.03);
+
+  /* ═══════════════════════════════════════════
+     📐 TYPOGRAPHY — Type Scale
+     ═══════════════════════════════════════════ */
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --text-display:  64rpx;   /* 页面大标题 */
+  --text-title:    48rpx;   /* 页面标题 */
+  --text-heading:  36rpx;   /* 区段标题 */
+  --text-subtitle: 30rpx;   /* 子标题 */
+  --text-body:     28rpx;   /* 正文 */
+  --text-caption:  24rpx;   /* 辅助文字 */
+  --text-overline: 20rpx;   /* 最小文字/标签 */
+  --text-small:    22rpx;   /* 小号辅助文字 */
+  --text-tiny:     18rpx;   /* 极小文字/badge */
+
+  --font-weight-black:    800;
+  --font-weight-bold:     700;
+  --font-weight-semibold: 600;
+  --font-weight-medium:   500;
+  --font-weight-normal:   400;
+
+  --line-height-tight:  1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed:1.7;
+
+  /* ═══════════════════════════════════════════
+     📏 SPACING — 8pt Grid (rpx)
+     ═══════════════════════════════════════════ */
+  --space-1:   4rpx;
+  --space-2:   8rpx;
+  --space-3:  12rpx;
+  --space-4:  16rpx;
+  --space-5:  20rpx;
+  --space-6:  24rpx;
+  --space-8:  32rpx;
+  --space-10: 40rpx;
+  --space-12: 48rpx;
+  --space-16: 64rpx;
+
+  --space-page-x: 24rpx;    /* 页面左右内边距 */
+  --space-page-top: 32rpx;  /* 页面顶部内边距 */
+
+  /* ═══════════════════════════════════════════
+     ⭕ RADIUS — 7-Level System
+     ═══════════════════════════════════════════ */
+  --radius-xs:   8rpx;    /* 极小：微圆角 */
+  --radius-sm:   12rpx;   /* 小元素：badge / tag */
+  --radius-md:   16rpx;   /* 中元素：button / input / card内 */
+  --radius-ml:   20rpx;   /* 中偏大：chip / 小卡片 */
+  --radius-lg:   24rpx;   /* 卡片 / 面板 */
+  --radius-xl:   32rpx;   /* 大卡片 / 弹窗 */
+  --radius-full: 999rpx;  /* 胶囊 / 头像 / 药丸 */
+
+  /* ═══════════════════════════════════════════
+     🌑 SHADOW — 4-Level Elevation
+     ═══════════════════════════════════════════ */
+  --elevation-1: 0 1rpx 4rpx rgba(0, 0, 0, 0.02);    /* 极浅：普通卡片浮层 */
+  --elevation-2: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);   /* 浅：下拉菜单 */
+  --elevation-3: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);   /* 中：弹窗 */
+  --elevation-4: 0 12rpx 48rpx rgba(0, 0, 0, 0.08);  /* 重：模态框 */
+
+  /* Card specific */
+  --card-shadow: none;           /* 无阴影 */
+  --card-border: none;           /* 无边框 — 沉浸式内容优先 */
+
+  /* ═══════════════════════════════════════════
+     🖼️ ICON — Size Scale
+     ═══════════════════════════════════════════ */
+  --icon-xs: 20rpx;
+  --icon-sm: 24rpx;
+  --icon-md: 32rpx;
+  --icon-lg: 40rpx;
+  --icon-xl: 48rpx;
+
+  /* ═══════════════════════════════════════════
+     🎬 TRANSITION
+     ═══════════════════════════════════════════ */
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow:   400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ═══════════════════════════════════════════
+     🔗 Aliases — 短名称兼容（正式保留，非废弃）
+     ═══════════════════════════════════════════ */
+  --color-primary:       var(--color-brand);
+  --color-dark:          var(--color-text);
+  --color-muted:         var(--color-text-muted);
+  --color-placeholder:   var(--color-text-muted);
+  --color-card:          var(--color-surface);
+  --color-bg:            var(--color-surface-alt);
+}
+
+
+/* ═══════════════════════════════════════════
+   🌙 DARK THEME
+   ═══════════════════════════════════════════ */
+
+/* 🌟 全局自动响应系统深色模式（无需 WXML 绑定）
+   —— 这是"全局适配"的核心：任何页面只要 @import 了本文件
+   或通过 app.wxss 间接受益，都会自动跟随系统主题 */
+@media (prefers-color-scheme: dark) {
+  page {
+    /* Brand */
+    --color-brand:        #40D5C7;
+    --color-brand-deep:   #2EC4B6;
+    --color-brand-light:  rgba(46, 196, 182, 0.15);
+    --color-brand-glow:   rgba(46, 196, 182, 0.25);
+    --color-brand-10:     rgba(46, 196, 182, 0.12);
+    --color-brand-20:     rgba(46, 196, 182, 0.25);
+  --color-brand-12:     rgba(46, 196, 182, 0.15);
+  --color-brand-30:     rgba(46, 196, 182, 0.35);
+    --color-brand-12:     rgba(46, 196, 182, 0.15);
+    --color-brand-30:     rgba(46, 196, 182, 0.35);
+
+    /* Accent */
+    --color-accent:       #F97316;
+    --color-accent-light: rgba(249, 115, 22, 0.15);
+
+    /* Semantic */
+    --color-danger:       #F87171;
+    --color-danger-bg:    rgba(239, 68, 68, 0.12);
+    --color-danger-border:rgba(239, 68, 68, 0.2);
+    --color-warning:       #FBBF24;
+    --color-warning-bg:    rgba(251, 191, 36, 0.12);
+    --color-warning-border:rgba(251, 191, 36, 0.2);
+    --color-success:       #34D399;
+    --color-success-bg:    rgba(52, 211, 153, 0.12);
+    --color-success-border:rgba(52, 211, 153, 0.2);
+    --color-info:          #60A5FA;
+    --color-info-bg:       rgba(96, 165, 250, 0.12);
+    --color-info-border:   rgba(96, 165, 250, 0.2);
+
+    /* Surface */
+    --color-surface:      #1A1D26;
+    --color-surface-alt:  #111318;
+    --color-surface-input:#1E2128;
+    --color-surface-hover:rgba(255, 255, 255, 0.05);
+
+    /* Text */
+    --color-text:          #E4E6EB;
+    --color-text-secondary:#A0A3B1;
+    --color-text-muted:    #6B6F83;
+    --color-text-inverse:  #FFFFFF;
+    --color-text-brand:    #40D5C7;
+    --color-text-danger:   #F87171;
+
+    /* Border */
+    --color-border:        #2A2D38;
+    --color-border-light:  #22252D;
+    --color-divider:       #22252D;
+
+    /* Glass */
+    --glass-bg:            rgba(26, 29, 38, 0.85);
+    --glass-blur:          20px;
+    --glass-border:        rgba(255, 255, 255, 0.06);
+    --glass-shadow:        0 8rpx 32rpx rgba(0, 0, 0, 0.3);
+
+    /* Shadow */
+    --elevation-1: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+    --elevation-2: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+    --elevation-3: 0 8rpx 32rpx rgba(0, 0, 0, 0.25);
+    --elevation-4: 0 12rpx 48rpx rgba(0, 0, 0, 0.3);
+
+    --card-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+    --card-border: 1rpx solid rgba(255, 255, 255, 0.04);
+  }
+}
+
+/* 🌟 手动深色模式覆盖（App 内开关）
+   —— 用户在 profile 页面手动开启深色模式时使用
+   —— 优先级高于 @media，可强制深色（即使系统是浅色） */
+.theme-dark {
+  /* Brand */
+  --color-brand:        #40D5C7;
+  --color-brand-deep:   #2EC4B6;
+  --color-brand-light:  rgba(46, 196, 182, 0.15);
+  --color-brand-glow:   rgba(46, 196, 182, 0.25);
+  --color-brand-10:     rgba(46, 196, 182, 0.12);
+  --color-brand-20:     rgba(46, 196, 182, 0.25);
+
+  /* Accent */
+  --color-accent:       #F97316;
+  --color-accent-light: rgba(249, 115, 22, 0.15);
+
+  /* Semantic */
+  --color-danger:       #F87171;
+  --color-danger-bg:    rgba(239, 68, 68, 0.12);
+  --color-danger-border:rgba(239, 68, 68, 0.2);
+  --color-warning:       #FBBF24;
+  --color-warning-bg:    rgba(251, 191, 36, 0.12);
+  --color-warning-border:rgba(251, 191, 36, 0.2);
+  --color-success:       #34D399;
+  --color-success-bg:    rgba(52, 211, 153, 0.12);
+  --color-success-border:rgba(52, 211, 153, 0.2);
+  --color-info:          #60A5FA;
+  --color-info-bg:       rgba(96, 165, 250, 0.12);
+  --color-info-border:   rgba(96, 165, 250, 0.2);
+
+  /* Surface */
+  --color-surface:      #1A1D26;
+  --color-surface-alt:  #111318;
+  --color-surface-input:#1E2128;
+  --color-surface-hover:rgba(255, 255, 255, 0.05);
+
+  /* Text */
+  --color-text:          #E4E6EB;
+  --color-text-secondary:#A0A3B1;
+  --color-text-muted:    #6B6F83;
+  --color-text-inverse:  #FFFFFF;
+  --color-text-brand:    #40D5C7;
+  --color-text-danger:   #F87171;
+
+  /* Border */
+  --color-border:        #2A2D38;
+  --color-border-light:  #22252D;
+  --color-divider:       #22252D;
+
+  /* Glass */
+  --glass-bg:            rgba(26, 29, 38, 0.85);
+  --glass-blur:          20px;
+  --glass-border:        rgba(255, 255, 255, 0.06);
+  --glass-shadow:        0 8rpx 32rpx rgba(0, 0, 0, 0.3);
+
+  /* Shadow */
+  --elevation-1: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  --elevation-2: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+  --elevation-3: 0 8rpx 32rpx rgba(0, 0, 0, 0.25);
+  --elevation-4: 0 12rpx 48rpx rgba(0, 0, 0, 0.3);
+
+  --card-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);       /* 暗色下保留轻微层次 */
+  --card-border: 1rpx solid rgba(255, 255, 255, 0.04);
+}

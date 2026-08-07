@@ -1,0 +1,22 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="header">
+    <view class="header-left">
+      <text class="header-title">关于我们</text>
+      <view class="header-indicator"></view>
+    </view>
+  </view>
+
+  <view class="about-section">
+    <view class="app-logo">
+      <image class="logo-image" src="/images/小程序头像.png" mode="aspectFit" />
+    </view>
+    <text class="app-name">拾路派 PathFinder</text>
+    <text class="app-version">v1.0.0</text>
+    <text class="app-desc">由 AI 驱动的智能旅行规划工具\n帮你生成个性化行程、探索旅行灵感\n让每一次出发都值得期待</text>
+  </view>
+
+  <view class="info-card" wx:for="{{infoList}}" wx:key="label">
+    <text class="info-label">{{item.label}}</text>
+    <text class="info-value">{{item.value}}</text>
+  </view>
+</view>

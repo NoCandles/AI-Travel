@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "chat-fab": "/components/chat-fab/chat-fab"
+  },
+  "navigationBarTitleText": "我的行程",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

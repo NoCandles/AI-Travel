@@ -1,0 +1,62 @@
+<view class="hiking-page {{darkMode ? 'theme-dark' : ''}}" wx:if="{{plan}}">
+  <view class="hero">
+    <view class="hero-kicker">徒步路线 · {{plan.routeTypeLabel}}</view>
+    <view class="hero-title">{{plan.destination}}</view>
+    <view class="hero-route">{{plan.startPoint}} <text>→</text> {{plan.endPoint}}</view>
+    <view class="hero-stats">
+      <view><text>{{plan.distanceKm}}</text><em>km</em><span>距离</span></view>
+      <view><text>{{plan.elevationGain}}</text><em>m</em><span>累计爬升</span></view>
+      <view><text>{{plan.durationText}}</text><span>预计时长</span></view>
+    </view>
+  </view>
+
+  <view class="route-chooser" wx:if="{{routeOptions.length > 1}}">
+    <view class="route-option {{item.id === selectedRouteId ? 'active' : ''}}" wx:for="{{routeOptions}}" wx:key="id" data-id="{{item.id}}" bindtap="selectRoute">
+      <text>{{item.name}}</text><span>{{item.summary}}</span>
+    </view>
+  </view>
+
+  <view class="map-wrap card">
+    <map id="hiking-map" class="trail-map" latitude="{{mapData.latitude}}" longitude="{{mapData.longitude}}" scale="{{mapData.scale}}" markers="{{markers}}" polyline="{{polylines}}" show-location enable-3D="{{false}}" />
+    <view class="map-badge">🥾 {{plan.difficulty}} · {{plan.routeTypeLabel}}</view>
+  </view>
+
+  <view class="status-card card" wx:if="{{status === 'hiking'}}">
+    <view><text class="status-kicker">正在徒步</text><text class="status-time">{{elapsedText}}</text></view>
+    <text>下一节点：核心爬升段 · 注意节奏</text>
+  </view>
+  <view class="status-card card success" wx:if="{{status === 'completed'}}">
+    <view><text class="status-kicker">本次徒步已完成</text><text class="status-time">{{elapsedText}}</text></view>
+    <text>稍后可以在我的行程中补充路况与感受。</text>
+  </view>
+
+  <view class="section card">
+    <view class="section-head"><text>路线分段</text><text>{{plan.preference}}</text></view>
+    <view class="segment" wx:for="{{segments}}" wx:key="title">
+      <view class="segment-icon">{{item.icon}}</view>
+      <view><text>{{item.title}}</text><span>{{item.meta}}</span></view>
+    </view>
+  </view>
+
+  <view class="section card" wx:if="{{status === 'planned'}}">
+    <view class="section-head"><text>出发前准备</text><text>最晚折返 {{plan.turnaroundTime}}</text></view>
+    <view class="check-item" wx:for="{{preparation}}" wx:key="label" bindtap="togglePreparation" data-index="{{index}}">
+      <view class="check {{item.done ? 'checked' : ''}}">{{item.done ? '✓' : ''}}</view><text>{{item.label}}</text>
+    </view>
+  </view>
+
+  <view class="section card safety-section" wx:if="{{safetyTips.length}}">
+    <view class="section-head"><text>安全提醒</text><text>出发前必读</text></view>
+    <view class="safety-item" wx:for="{{safetyTips}}" wx:key="*this"><text>!</text><span>{{item}}</span></view>
+  </view>
+
+  <view class="bottom-actions" wx:if="{{status === 'planned'}}">
+    <button class="sub-action" bindtap="saveOffline">{{offlineSaved ? '已保存离线' : '离线保存'}}</button>
+    <button class="primary-action" bindtap="startHiking">开始徒步</button>
+  </view>
+  <view class="bottom-actions" wx:elif="{{status === 'hiking'}}">
+    <button class="sub-action" bindtap="adjustWithAI">问 AI 调整</button>
+    <button class="primary-action" bindtap="finishHiking">结束徒步</button>
+  </view>
+  <view class="bottom-actions" wx:else><button class="primary-action" bindtap="adjustWithAI">回到对话，记录路况</button></view>
+</view>

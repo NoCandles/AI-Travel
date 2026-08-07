@@ -1,0 +1,86 @@
+<view class="edit-page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- 头部 -->
+  <view class="page-header">
+    <text class="page-title">编辑资料</text>
+    <text class="page-subtitle">完善个人信息，让旅行更懂你</text>
+  </view>
+
+  <!-- 头像卡片 -->
+  <view class="card avatar-card">
+    <view class="avatar-left">
+      <text class="avatar-title">头像</text>
+      <text class="avatar-desc">点击更换头像</text>
+    </view>
+    <view class="avatar-wrapper" bindtap="chooseAvatar">
+      <image wx:if="{{avatarUrl}}" class="avatar-img" src="{{avatarUrl}}" mode="aspectFill"/>
+      <image wx:else class="avatar-placeholder" src="/images/icons/user.svg" mode="aspectFill"/>
+      <view class="avatar-camera"><image class="camera-icon" src="/images/icons/camera.svg" mode="aspectFill"/></view>
+    </view>
+  </view>
+
+  <!-- 资料卡片 -->
+  <view class="card">
+    <!-- 昵称 -->
+    <view class="list-item">
+      <view class="list-left">
+        <view class="list-icon nickname"><image class="settings-item-icon" src="/images/icons/user.svg" mode="aspectFill"/></view>
+        <view class="list-info">
+          <text class="list-title">昵称</text>
+          <text class="list-desc">请输入昵称</text>
+        </view>
+      </view>
+      <input class="list-input" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNicknameInput" placeholder-class="list-placeholder" />
+    </view>
+
+    <!-- 性别 -->
+    <view class="list-item">
+      <view class="list-left">
+        <view class="list-icon gender"><image class="settings-item-icon" src="/images/icons/preference.svg" mode="aspectFill"/></view>
+        <view class="list-info">
+          <text class="list-title">性别</text>
+          <text class="list-desc">选择你的性别</text>
+        </view>
+      </view>
+      <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
+        <view class="list-value">{{genderOptions[genderIndex]}} <text class="list-arrow">›</text></view>
+      </picker>
+    </view>
+
+    <!-- 城市 -->
+    <view class="list-item">
+      <view class="list-left">
+        <image class="list-icon city" src="/images/icons/location-pin.svg"/>
+        <view class="list-info">
+          <text class="list-title">城市</text>
+          <text class="list-desc">请输入所在城市</text>
+        </view>
+      </view>
+      <input class="list-input" placeholder="请输入城市" value="{{city}}" bindinput="onCityInput" placeholder-class="list-placeholder" />
+    </view>
+
+    <!-- 简介 -->
+    <view class="list-item last">
+      <view class="list-left">
+        <view class="list-icon intro"><image class="settings-item-icon" src="/images/icons/edit.svg" mode="aspectFill"/></view>
+        <view class="list-info">
+          <text class="list-title">简介</text>
+          <text class="list-desc">介绍一下自己吧</text>
+        </view>
+      </view>
+    </view>
+    <view class="intro-section">
+      <textarea class="intro-textarea" placeholder="介绍一下自己吧" value="{{signature}}" maxlength="100" bindinput="onSignatureInput" placeholder-class="intro-placeholder" />
+      <text class="intro-count">{{signature.length}}/100</text>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <button class="save-btn" bindtap="saveProfile"><image class="save-btn-icon" src="/images/icons/save.svg" mode="aspectFit" />保存资料</button>
+
+  <!-- 底部提示 -->
+  <view class="footer-tip">
+    <image class="footer-tip-icon" src="/images/icons/info.svg" mode="aspectFit" />
+    <text>你的信息仅用于个性化推荐，安全有保障</text>
+  </view>
+</view>

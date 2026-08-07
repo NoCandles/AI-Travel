@@ -1,0 +1,137 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- 通用设置 -->
+  <view class="card">
+    <view class="card-header">
+      <view class="card-header-icon settings"><image class="card-header-img" src="/images/icons/settings.svg" mode="aspectFill"/></view>
+      <text class="card-title">通用设置</text>
+    </view>
+
+    <view class="setting-item">
+      <view class="setting-left">
+        <view class="setting-icon red"><image class="settings-item-icon" src="/images/icons/notification.svg" mode="aspectFill"/></view>
+        <view class="setting-info">
+          <text class="setting-text">消息通知</text>
+          <text class="setting-desc">接收行程提醒和预警通知</text>
+        </view>
+      </view>
+      <switch checked="{{notificationsEnabled}}" bindchange="onNotificationChange" color="#2EC4B6" />
+    </view>
+
+    <view class="setting-item">
+      <view class="setting-left">
+        <view class="setting-icon red"><image class="settings-item-icon" src="/images/icons/location-pin.svg" mode="aspectFill"/></view>
+        <view class="setting-info">
+          <text class="setting-text">定位服务</text>
+          <text class="setting-desc">用于获取当前位置和天气</text>
+        </view>
+      </view>
+      <switch checked="{{locationEnabled}}" bindchange="onLocationChange" color="#2EC4B6" />
+    </view>
+
+    <view class="setting-item last">
+      <view class="setting-left">
+        <view class="setting-icon purple"><image class="settings-item-icon" src="/images/icons/moon.svg" mode="aspectFill"/></view>
+        <view class="setting-info">
+          <text class="setting-text">深色模式</text>
+          <text class="setting-desc">开启强制深色，关闭跟随系统</text>
+        </view>
+      </view>
+      <switch checked="{{manualDarkOverride}}" bindchange="onDarkModeChange" color="#2EC4B6" />
+    </view>
+  </view>
+
+  <!-- 出行偏好 -->
+  <view class="card">
+    <view class="card-header">
+      <view class="card-header-icon pref"><image class="card-header-img" src="/images/icons/preference.svg" mode="aspectFill"/></view>
+      <text class="card-title">出行偏好</text>
+    </view>
+
+    <view class="setting-item">
+      <view class="setting-left">
+        <view class="setting-icon blue"><image class="settings-item-icon" src="/images/icons/transport.svg" mode="aspectFill"/></view>
+        <view class="setting-info">
+          <text class="setting-text">默认出行方式</text>
+          <text class="setting-desc">规划行程时的默认交通方式</text>
+        </view>
+      </view>
+      <picker mode="selector" range="{{travelModes}}" value="{{travelModeIndex}}" bindchange="onTravelModeChange">
+        <view class="picker-badge">{{travelModes[travelModeIndex]}}</view>
+      </picker>
+    </view>
+
+    <view class="setting-item">
+      <view class="setting-left">
+        <view class="setting-icon orange"><image class="settings-item-icon" src="/images/icons/budget.svg" mode="aspectFill"/></view>
+        <view class="setting-info">
+          <text class="setting-text">预算档位</text>
+          <text class="setting-desc">酒店和餐饮推荐标准</text>
+        </view>
+      </view>
+      <picker mode="selector" range="{{budgetLevels}}" value="{{budgetIndex}}" bindchange="onBudgetChange">
+        <view class="picker-badge">{{budgetLevels[budgetIndex]}}</view>
+      </picker>
+    </view>
+
+    <view class="setting-item last">
+      <view class="setting-left">
+        <view class="setting-icon green"><image class="settings-item-icon" src="/images/icons/star.svg" mode="aspectFill"/></view>
+        <view class="setting-info">
+          <text class="setting-text">游玩风格</text>
+          <text class="setting-desc">AI 行程生成的偏好风格</text>
+        </view>
+      </view>
+      <picker mode="selector" range="{{styles}}" value="{{styleIndex}}" bindchange="onStyleChange">
+        <view class="picker-badge">{{styles[styleIndex]}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 关于 -->
+  <view class="card">
+    <view class="setting-item" bindtap="showAbout">
+      <view class="setting-left">
+        <view class="setting-icon teal"><image class="settings-item-icon" src="/images/icons/info.svg" mode="aspectFill"/></view>
+        <text class="setting-text">关于我们</text>
+      </view>
+      <text class="setting-arrow">›</text>
+    </view>
+
+    <view class="setting-item" bindtap="showHelp">
+      <view class="setting-left">
+        <view class="setting-icon yellow"><image class="settings-item-icon" src="/images/icons/help.svg" mode="aspectFill"/></view>
+        <text class="setting-text">帮助与反馈</text>
+      </view>
+      <text class="setting-arrow">›</text>
+    </view>
+
+    <view class="setting-item" bindtap="clearCache">
+      <view class="setting-left">
+        <view class="setting-icon orange"><image class="settings-item-icon" src="/images/icons/delete.svg" mode="aspectFill"/></view>
+        <text class="setting-text">清理缓存</text>
+      </view>
+      <text class="setting-arrow">›</text>
+    </view>
+
+    <view class="setting-item last" bindtap="checkUpdate">
+      <view class="setting-left">
+        <view class="setting-icon blue"><image class="settings-item-icon" src="/images/icons/refresh.svg" mode="aspectFill"/></view>
+        <text class="setting-text">检查更新</text>
+      </view>
+      <view class="version-row">
+        <text class="version-text">v1.0.0</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <button class="btn-logout" wx:if="{{isLoggedIn}}" bindtap="logout">退出登录</button>
+
+  <!-- 版权 -->
+  <view class="copyright">
+    <text>拾路派 · 智能旅行规划</text>
+    <text>© 2026 All Rights Reserved</text>
+  </view>
+</view>

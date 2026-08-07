@@ -1,0 +1,30 @@
+<cover-view class="stats-card" wx:if="{{visible}}">
+  <cover-view class="stat-item">
+    <cover-image class="stat-icon stat-link" src="/images/icons/nav.svg"></cover-image>
+    <cover-view class="stat-info">
+      <cover-view class="stat-val">{{distance}} km</cover-view>
+      <cover-view class="stat-lbl">总距离</cover-view>
+    </cover-view>
+  </cover-view>
+  <cover-view class="stat-item">
+    <cover-image class="stat-icon stat-time" src="/images/icons/time.svg"></cover-image>
+    <cover-view class="stat-info">
+      <cover-view class="stat-val">{{duration}}</cover-view>
+      <cover-view class="stat-lbl">预计耗时</cover-view>
+    </cover-view>
+  </cover-view>
+  <cover-view class="stat-item">
+    <cover-image class="stat-icon stat-spot" src="/images/icons/location-pin.svg"></cover-image>
+    <cover-view class="stat-info">
+      <cover-view class="stat-val">{{pointCount}}个</cover-view>
+      <cover-view class="stat-lbl">途经点</cover-view>
+    </cover-view>
+  </cover-view>
+  <!-- 多路线切换按钮 -->
+  <cover-view class="path-switcher" wx:if="{{totalPaths > 1}}" bindtap="onTapSwitchPath">
+    <cover-view class="switch-btn">
+      <cover-image class="switch-icon" src="/images/icons/map-icon.svg"></cover-image>
+      <cover-view class="switch-label">{{currentPathIndex + 1}}/{{totalPaths}}条路线</cover-view>
+    </cover-view>
+  </cover-view>
+</cover-view>

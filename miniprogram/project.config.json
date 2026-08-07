@@ -1,0 +1,15 @@
+{
+  "appid": "wx358133233087cae5",
+  "projectname": "my-miniprogram",
+  "libVersion": "latest",
+  "simulatorPluginLibVersion": {
+    "wxext14566970e7e9f62": "2.27.3"
+  },
+  "compileType": "miniprogram",
+  "projectArchitecture": "multiPlatform",
+  "setting": {
+    "condition": true,
+    "enhance": true,
+    "es6": true
+  }
+}

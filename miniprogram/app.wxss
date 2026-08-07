@@ -1,0 +1,413 @@
+/* ============================================
+   拾路派 Global Styles v2.0
+   统一 Token 驱动 — 唯一全局样式源
+   ============================================ */
+
+@import 'styles/variables.wxss';
+
+/* ─── Reset ─── */
+page {
+  font-family: var(--font-family);
+  font-size: var(--text-body);
+  color: var(--color-text);
+  background: var(--color-surface-alt);
+  box-sizing: border-box;
+}
+
+button {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  line-height: inherit;
+}
+button::after { border: none; }
+
+/* 全局自定义导航返回按钮 */
+.app-nav-back {
+  width: 72rpx;
+  height: 72rpx;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1rpx solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8rpx 22rpx rgba(19, 42, 48, 0.16);
+  box-sizing: border-box;
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+.app-nav-back::after { border: none; }
+
+.app-nav-back:active {
+  transform: scale(0.96);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.app-nav-back-icon {
+  width: 36rpx;
+  height: 36rpx;
+  opacity: 0.92;
+}
+
+.theme-dark .app-nav-back {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(26, 29, 38, 0.9);
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark .app-nav-back:active { background: rgba(39, 43, 55, 0.94); }
+
+.theme-dark .app-nav-back-icon {
+  filter: brightness(0) invert(1);
+  opacity: 0.88;
+}
+
+/* ──────────────────────────────────────────
+   📦 Card
+   ────────────────────────────────────────── */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--card-shadow);
+  border: var(--card-border);
+}
+
+.card-glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1rpx solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ──────────────────────────────────────────
+   🪟 Glassmorphism — 通用玻璃效果
+   ────────────────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1rpx solid var(--glass-border);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1rpx solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.theme-dark .glass {
+  background: var(--glass-bg);
+  border: 1rpx solid var(--glass-border);
+}
+
+.theme-dark .glass-strong {
+  background: rgba(26, 29, 38, 0.92);
+  border: 1rpx solid var(--glass-border);
+}
+
+/* ──────────────────────────────────────────
+   🔘 Buttons
+   ────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+  border: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+.btn:active { transform: scale(0.97); }
+
+/* Sizes */
+.btn-sm  { padding: 16rpx 28rpx; font-size: var(--text-caption); border-radius: var(--radius-sm); }
+.btn-md  { padding: 20rpx 36rpx; font-size: var(--text-caption); }
+.btn-lg  { padding: 24rpx 44rpx; font-size: var(--text-body); }
+
+/* Variants */
+.btn-primary {
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-full);
+  box-shadow: 0 4rpx 14rpx var(--color-brand-glow);
+}
+.btn-primary:active { background: var(--color-brand-deep); }
+
+.btn-secondary {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  border-radius: var(--radius-full);
+}
+.btn-secondary:active { background: var(--color-surface-hover); }
+
+.btn-outline {
+  background: transparent;
+  border: 1rpx solid var(--color-border);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
+}
+.btn-outline:active { background: var(--color-surface-hover); }
+
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+  border-radius: var(--radius-full);
+}
+.btn-danger:active { opacity: 0.85; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+}
+.btn-ghost:active { color: var(--color-text); }
+
+/* Legacy aliases */
+.btn-primary { background: var(--color-brand); color: var(--color-text-inverse); border-radius: var(--radius-full); padding: var(--space-5) var(--space-10); font-size: var(--text-body); font-weight: var(--font-weight-semibold); display: flex; align-items: center; justify-content: center; gap: var(--space-2); border: none; }
+.btn-secondary { background: var(--color-surface-alt); color: var(--color-text); border: none; border-radius: var(--radius-full); padding: var(--space-4) var(--space-6); font-size: var(--text-caption); font-weight: var(--font-weight-medium); }
+.btn-outline { background: transparent; border: 1rpx solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-full); padding: 8rpx 20rpx; font-size: 22rpx; font-weight: var(--font-weight-medium); }
+
+/* ──────────────────────────────────────────
+   🏷️ Tag / Badge
+   ────────────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-surface-alt);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-full);
+  font-size: var(--text-overline);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+.tag.active {
+  background: var(--color-brand);
+  color: var(--color-text-inverse);
+}
+
+/* ──────────────────────────────────────────
+   📝 Input / Form
+   ────────────────────────────────────────── */
+.input {
+  background: var(--color-surface-input);
+  border: 1rpx solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  font-size: 24rpx;
+  color: var(--color-text);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast);
+}
+.input:focus {
+  border-color: var(--color-brand);
+  outline: none;
+}
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ──────────────────────────────────────────
+   🚨 Alert
+   ────────────────────────────────────────── */
+.alert {
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--text-overline);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.alert-warning {
+  background: var(--color-warning-bg);
+  border-left: 4rpx solid var(--color-warning);
+  color: var(--color-warning);
+}
+.alert-danger {
+  background: var(--color-danger-bg);
+  border-left: 4rpx solid var(--color-danger);
+  color: var(--color-danger);
+}
+.alert-success {
+  background: var(--color-success-bg);
+  border-left: 4rpx solid var(--color-success);
+  color: var(--color-success);
+}
+
+/* ──────────────────────────────────────────
+   📐 Layout Utilities
+   ────────────────────────────────────────── */
+.container {
+  padding: var(--space-page-x);
+  padding-bottom: 160rpx;
+}
+.flex           { display: flex; align-items: center; }
+.flex-between   { display: flex; justify-content: space-between; align-items: center; }
+.flex-center    { display: flex; justify-content: center; align-items: center; }
+.flex-col       { display: flex; flex-direction: column; }
+
+/* Gaps */
+.gap-xs { gap: var(--space-1); }
+.gap-sm { gap: var(--space-3); }
+.gap-md { gap: var(--space-4); }
+.gap-lg { gap: var(--space-6); }
+
+/* Margins */
+.mt-sm { margin-top: var(--space-3); }
+.mt-md { margin-top: var(--space-6); }
+.mb-sm { margin-bottom: var(--space-3); }
+.mb-md { margin-bottom: var(--space-6); }
+
+/* Paddings */
+.p-sm  { padding: var(--space-3); }
+.p-md  { padding: var(--space-6); }
+
+/* ──────────────────────────────────────────
+   📝 Typography Utilities
+   ────────────────────────────────────────── */
+.text-display { font-size: var(--text-display); font-weight: var(--font-weight-black); }
+.text-title   { font-size: var(--text-title);   font-weight: var(--font-weight-black); }
+.text-heading { font-size: var(--text-heading); font-weight: var(--font-weight-bold); }
+.text-subtitle{ font-size: var(--text-subtitle);font-weight: var(--font-weight-semibold); }
+.text-body    { font-size: var(--text-body);    font-weight: var(--font-weight-normal); }
+.text-caption { font-size: var(--text-caption); font-weight: var(--font-weight-normal); }
+.text-overline{ font-size: var(--text-overline);font-weight: var(--font-weight-medium); }
+
+.text-bold    { font-weight: var(--font-weight-semibold); }
+.text-brand   { color: var(--color-brand); }
+.text-danger  { color: var(--color-danger); }
+.text-muted   { color: var(--color-text-muted); }
+.text-secondary{ color: var(--color-text-secondary); }
+
+/* ──────────────────────────────────────────
+   🖼️ Icon Utilities
+   ────────────────────────────────────────── */
+.icon   { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+.icon-xs{ width: var(--icon-xs); height: var(--icon-xs); }
+.icon-sm{ width: var(--icon-sm); height: var(--icon-sm); }
+.icon-md{ width: var(--icon-md); height: var(--icon-md); }
+.icon-lg{ width: var(--icon-lg); height: var(--icon-lg); }
+.icon-xl{ width: var(--icon-xl); height: var(--icon-xl); }
+
+/* Legacy icon classes — keep for existing WXML references */
+.svg-icon        { width: 40rpx; height: 40rpx; display: inline-block; vertical-align: middle; }
+.search-icon     { width: 40rpx !important; height: 40rpx !important; flex-shrink: 0; }
+.card-title-icon { width: 36rpx !important; height: 36rpx !important; }
+.act-icon        { width: 28rpx !important; height: 28rpx !important; }
+.act-icon-sm     { width: 22rpx !important; height: 22rpx !important; }
+.camera-icon     { width: 24rpx !important; height: 24rpx !important; display: block; }
+.save-btn-icon   { width: 32rpx !important; height: 32rpx !important; display: inline-block; vertical-align: middle; }
+.tip-icon        { width: 26rpx !important; height: 26rpx !important; display: inline-block; vertical-align: middle; margin-right: 8rpx; }
+.day-arrow       { width: 20rpx !important; height: 20rpx !important; display: inline-block; vertical-align: middle; }
+.treasure-icon   { width: 34rpx !important; height: 34rpx !important; display: block; flex-shrink: 0; }
+.card-loc-icon   { width: 24rpx !important; height: 24rpx !important; flex-shrink: 0; }
+.user-loc-icon   { width: 24rpx !important; height: 24rpx !important; flex-shrink: 0; }
+.generate-sparkle{ width: 36rpx !important; height: 36rpx !important; display: block; }
+.ai-badge-icon   { width: 22rpx !important; height: 22rpx !important; }
+.ai-image-placeholder{ width: 60rpx !important; height: 60rpx !important; opacity: 0.5; }
+.settings-icon   { width: 32rpx !important; height: 32rpx !important; display: block; }
+.settings-item-icon{ width: 32rpx !important; height: 32rpx !important; display: block; margin: 16rpx; }
+.card-header-img { width: 24rpx !important; height: 24rpx !important; display: block; }
+
+/* ──────────────────────────────────────────
+   📤 Share Button System — 统一分享按钮
+   ────────────────────────────────────────── */
+
+/* 类型 A：胶囊分享按钮（用于卡片右上角） */
+.share-btn-pill {
+  font-size: 20rpx;
+  padding: 4rpx 18rpx;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-12);
+  color: var(--color-text-brand);
+  border: none;
+  line-height: 1.6;
+  margin: 0;
+  transition: all var(--transition-fast);
+}
+.share-btn-pill:active {
+  transform: scale(0.95);
+  background: rgba(46, 196, 182, 0.2);
+}
+.share-btn-pill::after { border: none; }
+.theme-dark .share-btn-pill {
+  background: rgba(46, 196, 182, 0.15);
+  color: var(--color-brand);
+}
+
+/* 类型 B：操作栏分享按钮（图标+文字，用于详情页动作栏） */
+.share-btn-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  gap: 4rpx;
+  background: var(--color-surface-input);
+  border-radius: var(--radius-md);
+  border: none;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-overline);
+  transition: all var(--transition-fast);
+}
+.share-btn-action:active {
+  transform: scale(0.95);
+  background: var(--color-surface-hover);
+}
+.share-btn-action::after { border: none; }
+.theme-dark .share-btn-action {
+  background: var(--color-surface-alt);
+}
+
+/* ──────────────────────────────────────────
+   📱 通用状态模板 — loading / error / empty
+   配合 templates/state-template.wxml 使用
+   ────────────────────────────────────────── */
+.state-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 48rpx;
+  gap: 24rpx;
+}
+.state-spinner {
+  width: 56rpx; height: 56rpx;
+  border: 5rpx solid var(--color-border);
+  border-top-color: var(--color-brand);
+  border-radius: 50%;
+  animation: state-spin 0.7s linear infinite;
+}
+@keyframes state-spin { to { transform: rotate(360deg); } }
+.state-icon { font-size: 72rpx; }
+.state-icon-img {
+  width: 88rpx;
+  height: 88rpx;
+  opacity: .82;
+}
+.state-text { font-size: 28rpx; color: var(--color-text-secondary); }
+.state-btn {
+  margin-top: 8rpx;
+  background: var(--color-brand);
+  color: #fff;
+  border: none;
+  border-radius: 40rpx;
+  padding: 16rpx 48rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.state-btn::after { border: none; }

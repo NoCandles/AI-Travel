@@ -1,0 +1,201 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text>正在加载行程...</text>
+  </view>
+
+  <view wx:if="{{!loading && trip}}">
+    <view class="gallery-card">
+      <swiper class="hero-swiper" wx:if="{{trip.images && trip.images.length > 1}}" indicator-dots circular bindchange="onHeroSwiperChange">
+        <swiper-item wx:for="{{trip.images}}" wx:key="imageUrl">
+          <image wx:if="{{item.mediaType != 'video'}}" class="hero-image" src="{{item.imageUrl}}" mode="aspectFill" bindtap="previewHeroImage" data-index="{{index}}" />
+          <view wx:else class="hero-video-wrap" bindtap="playHeroVideo" data-index="{{index}}">
+            <video class="hero-video" id="hero-video-{{index}}" src="{{item.imageUrl}}" controls="{{heroVideoPlaying === index}}" show-center-play-btn="{{false}}" muted="{{heroVideoPlaying !== index}}" autoplay="{{heroVideoPlaying === index}}" loop object-fit="cover"></video>
+            <view class="hero-play-btn" wx:if="{{heroVideoPlaying !== index}}"><text class="hero-play-icon">▶</text></view>
+          </view>
+        </swiper-item>
+      </swiper>
+      <image class="hero-image" wx:else src="{{trip.heroImageSrc}}" mode="aspectFill" bindtap="previewHeroImage" data-index="0" binderror="onHeroImageError" />
+      <view class="hero-shade"></view>
+
+      <view class="hero-nav" style="top: {{navPaddingTop}}px;">
+        <button class="app-nav-back" bindtap="goBack" aria-label="返回">
+          <image class="app-nav-back-icon" src="/images/icons/arrow-left.svg" mode="aspectFit" />
+        </button>
+      </view>
+
+      <view class="hero-content">
+        <text class="hero-title">{{trip.title || trip.name}}</text>
+        <view class="hero-meta-row">
+          <view class="hero-location">
+            <image src="/images/icons/location-pin.svg" mode="aspectFit" />
+            <text>{{trip.location || trip.destination || '旅行目的地'}}</text>
+          </view>
+          <view class="hero-duration">{{trip.days || '?'}}天{{trip.nights || '?'}}晚</view>
+        </view>
+      </view>
+
+      <view class="creator-panel">
+        <view class="author-row">
+          <view class="author-main" catchtap="viewAuthorProfile">
+            <image class="author-avatar" src="{{trip.avatar || '/images/icons/user.svg'}}" mode="aspectFill" />
+            <view class="author-copy">
+              <view class="author-title-row">
+                <text class="author-name">{{trip.nickname || '旅行家'}}</text>
+                <text class="author-level">Lv.{{trip.level || 6}}</text>
+              </view>
+              <text class="author-desc">旅行达人 · {{trip.followerCount || '探索世界中'}}</text>
+            </view>
+          </view>
+          <button class="follow-btn {{trip.isFollowed ? 'followed' : ''}}" catchtap="toggleFollow" wx:if="{{trip.userId !== currentUserId}}">{{trip.isFollowed ? '已关注' : '+ 关注'}}</button>
+        </view>
+
+        <view class="action-grid">
+          <view class="action-item {{trip.isLiked ? 'active' : ''}}" catchtap="toggleLike">
+            <image src="{{trip.isLiked ? '/images/icons/love-full.svg' : '/images/icons/love.svg'}}" mode="aspectFit" />
+            <view class="action-copy"><text class="action-value">{{trip.likeCount || 0}}</text><text class="action-label">点赞</text></view>
+          </view>
+          <view class="action-item" catchtap="scrollToComment">
+            <image src="/images/icons/comment-outline.svg" mode="aspectFit" />
+            <view class="action-copy"><text class="action-value">{{trip.commentCount || 0}}</text><text class="action-label">评论</text></view>
+          </view>
+          <view class="action-item {{trip.isFaved ? 'active' : ''}}" catchtap="toggleFav">
+            <image src="/images/icons/star.svg" mode="aspectFit" />
+            <view class="action-copy"><text class="action-value">{{trip.favCount || 0}}</text><text class="action-label">收藏</text></view>
+          </view>
+          <button class="action-item share-btn-action" open-type="share">
+            <image src="/images/icons/share.svg" mode="aspectFit" /><text class="action-label single">分享</text>
+          </button>
+          <view class="action-item" catchtap="shareToChat">
+            <image src="/images/icons/message-outline.svg" mode="aspectFit" /><text class="action-label single">私信</text>
+          </view>
+        </view>
+
+        <view class="packing-card">
+          <view class="packing-icon"><image src="/images/icons/clipboard-list.svg" mode="aspectFit" /></view>
+          <view class="packing-main" catchtap="goPackingList">
+            <view class="packing-title-row"><text class="packing-title">行李清单</text><text class="packing-progress" wx:if="{{trip.packingProgress && trip.packingProgress.total > 0}}">已完成 {{trip.packingProgress.checked}}/{{trip.packingProgress.total}}</text></view>
+            <text class="packing-sub" wx:if="{{!trip.packingProgress || trip.packingProgress.total === 0}}">出发前物品管理，一键检查</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="sticky-tabs">
+      <view class="tab-item {{activeTab === 'route' ? 'active' : ''}}" data-tab="route" bindtap="switchTab"><image src="/images/icons/route.svg" mode="aspectFit" /><text>路线</text></view>
+      <view class="tab-item {{activeTab === 'spots' ? 'active' : ''}}" data-tab="spots" bindtap="switchTab"><image src="/images/icons/scenic.svg" mode="aspectFit" /><text>景点</text></view>
+      <view class="tab-item {{activeTab === 'cost' ? 'active' : ''}}" data-tab="cost" bindtap="switchTab"><image src="/images/icons/budget.svg" mode="aspectFit" /><text>费用</text></view>
+      <view class="tab-item {{activeTab === 'comment' ? 'active' : ''}}" data-tab="comment" bindtap="switchTab"><image src="/images/icons/comment-outline.svg" mode="aspectFit" /><text>评论</text></view>
+    </view>
+
+    <view class="content">
+      <view class="tab-content route-execution {{itineraryExpanded ? '' : 'sheet-collapsed'}}" wx:if="{{activeTab === 'route'}}">
+        <view class="route-map-wrap">
+          <map id="trip-map" class="trip-map route-map" longitude="{{mapData.longitude}}" latitude="{{mapData.latitude}}" scale="{{mapData.scale}}" markers="{{markers}}" polyline="{{polylines}}" show-location enable-traffic="{{false}}" bindmarkertap="onMapMarkerTap">
+            <cover-view class="map-day-rail">
+              <cover-view class="map-day-pill {{activeDay === idx ? 'active' : ''}} {{idx < trip.dayList.length - 1 ? 'with-gap' : ''}}" wx:for="{{trip.dayList}}" wx:key="index" wx:for-index="idx" data-day="{{idx}}" bindtap="switchMapDay">DAY{{idx + 1}}</cover-view>
+            </cover-view>
+            <cover-view class="map-side-tools">
+              <cover-view class="map-tool" bindtap="toggleMapPathPicker"><cover-image src="/images/icons/route.svg" /><cover-view>路线总览</cover-view></cover-view>
+              <cover-view class="map-tool" bindtap="locateRoute"><cover-image src="/images/icons/location.svg" /><cover-view>定位</cover-view></cover-view>
+              <cover-view class="map-zoom"><cover-view data-delta="1" bindtap="changeMapScale">＋</cover-view><cover-view class="zoom-divider"></cover-view><cover-view data-delta="-1" bindtap="changeMapScale">－</cover-view></cover-view>
+            </cover-view>
+            <cover-view class="map-mode-dock {{itineraryExpanded ? '' : 'with-collapsed-sheet'}}">
+              <cover-view class="mode-option {{travelMode === item.key ? 'active' : ''}}" wx:for="{{travelModes}}" wx:key="key" data-mode="{{item.key}}" bindtap="switchTravelMode"><cover-image src="{{item.iconPath}}" /><cover-view>{{item.label}}</cover-view></cover-view>
+            </cover-view>
+            <cover-view class="map-collapsed-sheet" wx:if="{{!itineraryExpanded}}" bindtap="toggleItinerarySheet" aria-role="button" aria-label="展开当天行程">
+              <cover-view class="map-collapsed-handle"></cover-view>
+              <cover-view class="map-collapsed-row">
+                <cover-view class="map-collapsed-day">DAY{{activeDay + 1}}</cover-view>
+                <cover-view class="map-collapsed-copy">
+                  <cover-view class="map-collapsed-route">
+                    <cover-view class="map-collapsed-place" wx:for="{{currentDayItem.spots}}" wx:key="id">{{item.name}}{{index < currentDayItem.spots.length - 1 ? ' → ' : ''}}</cover-view>
+                  </cover-view>
+                  <cover-view class="map-collapsed-hint">{{currentDayItem.spots.length || 0}} 个地点 · 点击展开完整行程</cover-view>
+                </cover-view>
+                <cover-image class="map-collapsed-arrow" src="/images/icons/arrow-up.svg" />
+              </cover-view>
+            </cover-view>
+            <cover-view class="map-loading" wx:if="{{loadingRoute}}"><cover-view class="map-spinner"></cover-view><cover-view class="map-loading-text">路线规划中...</cover-view></cover-view>
+          </map>
+          <path-picker visible="{{showPathPicker && totalPaths > 1}}" paths="{{allPaths}}" currentIndex="{{currentPathIndex}}" bind:close="toggleMapPathPicker" bind:select="switchMapPath" />
+        </view>
+
+        <view class="itinerary-sheet" wx:if="{{itineraryExpanded}}">
+          <view class="sheet-handle" bindtap="toggleItinerarySheet" aria-role="button" aria-label="{{itineraryExpanded ? '收起当天行程' : '展开当天行程'}}">
+            <view class="sheet-handle-bar"></view>
+          </view>
+          <view class="itinerary-heading" bindtap="toggleItinerarySheet" aria-role="button" aria-label="{{itineraryExpanded ? '收起当天行程' : '展开当天行程'}}">
+            <text class="itinerary-day">DAY{{activeDay + 1}}</text>
+            <view class="itinerary-copy">
+              <view class="itinerary-summary">
+                <text wx:for="{{currentDayItem.spots}}" wx:key="id">{{item.name}}{{index < currentDayItem.spots.length - 1 ? ' → ' : ''}}</text>
+              </view>
+            </view>
+            <image class="sheet-toggle-icon" src="/images/icons/arrow-up.svg" mode="aspectFit" />
+          </view>
+
+          <view class="itinerary-body" wx:if="{{itineraryExpanded}}">
+            <view class="execution-list" wx:if="{{currentDayItem.spots && currentDayItem.spots.length > 0}}">
+              <view class="execution-item" wx:for="{{currentDayItem.spots}}" wx:key="id" catchtap="toggleSpotExpand" data-spot-id="{{item.id}}">
+                <text class="execution-time">{{item.arrivalTime || '--:--'}}</text>
+                <view class="execution-track"><view class="execution-dot">{{index + 1}}</view><view class="execution-line" wx:if="{{index < currentDayItem.spots.length - 1}}"></view></view>
+                <view class="execution-main">
+                  <view class="execution-title-row"><text class="execution-name">{{item.name}}</text><text class="execution-type">{{item.type || '景点'}}</text></view>
+                  <text class="execution-duration">预计停留 {{item.duration || 60}} 分钟</text>
+                  <view class="route-guide" wx:if="{{item._expanded && item.travelGuide}}"><text class="route-guide-label">游玩推荐</text><text class="route-guide-text">{{item.travelGuide}}</text></view>
+                </view>
+                <image class="execution-cover" src="{{item.image || item.coverImage || trip.heroImageSrc}}" mode="aspectFill" lazy-load />
+                <image class="execution-arrow" src="/images/icons/arrow-right.svg" mode="aspectFit" />
+              </view>
+            </view>
+            <view class="empty-card" wx:else><text>暂无路线数据</text></view>
+
+            <button class="navigation-cta" bindtap="goMapNavigation"><text>开始导航</text><image src="/images/icons/nav.svg" mode="aspectFit" /></button>
+          </view>
+        </view>
+      </view>
+
+      <view class="tab-content spots-content" wx:if="{{activeTab === 'spots'}}">
+        <view class="desc-card highlight-card" wx:if="{{trip.description || (trip.tags && trip.tags.length > 0)}}">
+          <view class="card-heading"><view><text class="section-title">行程亮点</text><text class="card-subtitle">这趟旅程值得收藏的理由</text></view></view>
+          <text class="desc-text" wx:if="{{trip.description}}">{{trip.description}}</text>
+          <view class="tag-row" wx:if="{{trip.tags.length > 0}}"><text class="tag" wx:for="{{trip.tags}}" wx:key="*this">#{{item}}</text></view>
+        </view>
+        <view class="content-card travel-note-card" wx:if="{{trip.content}}"><view class="card-heading"><view><text class="section-title">旅行手记</text><text class="card-subtitle">来自作者的旅途记录</text></view></view><text class="desc-text">{{trip.content}}</text></view>
+        <view class="spots-grid">
+          <view class="spot-gallery-card" wx:for="{{allSpots}}" wx:key="id">
+            <image class="spot-gallery-img" src="{{item.image || trip.heroImageSrc}}" mode="aspectFill" />
+            <view class="spot-gallery-shade"></view><view class="spot-day-badge"><text>Day {{item.dayIndex + 1}}</text><text wx:if="{{item.arrivalTime}}">{{item.arrivalTime}}</text></view>
+            <view class="spot-gallery-copy"><view class="spot-name-row"><image class="spot-location-icon" src="/images/icons/location.svg" mode="aspectFit" /><text class="spot-gallery-name">{{item.name}}</text></view><text class="spot-gallery-address">{{item.address || item.desc || '行程景点'}}</text></view>
+          </view>
+        </view>
+      </view>
+
+      <view class="tab-content" wx:if="{{activeTab === 'cost'}}">
+        <view class="cost-card"><view class="cost-overview"><text class="cost-overview-label">本次行程预计花费</text><view class="cost-overview-amount"><text>¥</text><text>{{totalCost.total || 0}}</text></view><text class="cost-overview-note">基于作者行程记录，仅供参考</text></view><view class="cost-heading"><text>费用构成</text><text>{{trip.days || 0}} 天行程</text></view><view class="cost-grid"><view class="cost-item"><view class="cost-type-icon transport">行</view><text class="cost-item-label">交通</text><text class="cost-item-value">¥{{totalCost.transport || 0}}</text></view><view class="cost-item"><view class="cost-type-icon hotel">住</view><text class="cost-item-label">住宿</text><text class="cost-item-value">¥{{totalCost.hotel || 0}}</text></view><view class="cost-item"><view class="cost-type-icon food">食</view><text class="cost-item-label">餐饮</text><text class="cost-item-value">¥{{totalCost.food || 0}}</text></view><view class="cost-item"><view class="cost-type-icon ticket">票</view><text class="cost-item-label">门票</text><text class="cost-item-value">¥{{totalCost.ticket || 0}}</text></view></view></view>
+      </view>
+
+      <view class="tab-content comment-content" wx:if="{{activeTab === 'comment'}}" id="comment-section">
+        <view class="comment-list">
+          <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+            <image class="comment-avatar" src="{{item.avatar || '/images/icons/user.svg'}}" mode="aspectFill" catchtap="viewCommentUser" data-user-id="{{item.userId}}" />
+            <view class="comment-body"><view class="comment-head"><text class="comment-name">{{item.nickname || '用户'}}</text><text class="author-badge" wx:if="{{item.isAuthor}}">作者</text></view><text class="comment-text">{{item.content}}</text><view class="comment-meta"><view class="comment-actions"><text>{{item.createTime}}</text><text catchtap="replyToComment" data-comment="{{item}}">回复</text><text class="danger" wx:if="{{item.userId === currentUserId}}" catchtap="deleteComment" data-id="{{item.id}}">删除</text></view><view class="comment-like {{item.isLiked ? 'liked' : ''}}" catchtap="toggleCommentLike" data-id="{{item.id}}"><image src="{{item.isLiked || item.likeCount > 0 ? '/images/icons/love-full.svg' : '/images/icons/love.svg'}}" mode="aspectFit" /><text>{{item.likeCount || 0}}</text></view></view>
+              <view class="reply-toggle" wx:if="{{item.replies && item.replies.length > 0}}" catchtap="toggleCommentExpand" data-id="{{item.id}}"><text>{{commentExpanded[item.id] === false ? '展开' : '收起'}} {{item.replies.length}} 条回复</text></view>
+              <view class="reply-list" wx:if="{{item.replies && item.replies.length > 0 && commentExpanded[item.id] !== false}}"><view class="reply-item" wx:for="{{item.replies}}" wx:key="id" wx:for-item="reply"><view class="reply-head"><text>{{reply.nickname || '用户'}}</text><text class="author-badge" wx:if="{{reply.isAuthor}}">作者</text><text wx:if="{{reply.replyToNickname}}">回复 @{{reply.replyToNickname}}</text></view><text class="reply-text">{{reply.content}}</text><view class="reply-meta"><view class="comment-actions"><text>{{reply.createTime}}</text><text catchtap="replyToComment" data-comment="{{reply}}">回复</text><text class="danger" wx:if="{{reply.userId === currentUserId}}" catchtap="deleteComment" data-id="{{reply.id}}">删除</text></view><view class="comment-like {{reply.isLiked ? 'liked' : ''}}" catchtap="toggleCommentLike" data-id="{{reply.id}}"><image src="{{reply.isLiked || reply.likeCount > 0 ? '/images/icons/love-full.svg' : '/images/icons/love.svg'}}" mode="aspectFit" /><text>{{reply.likeCount || 0}}</text></view></view></view></view>
+            </view>
+          </view>
+          <view class="empty-card" wx:if="{{comments.length === 0}}"><text>还没有评论，来留下第一条旅行想法吧</text></view>
+          <view class="load-more" wx:if="{{commentHasMore}}" catchtap="loadMoreComments"><text wx:if="{{loadingComments}}">加载中...</text><text wx:else>加载更多评论</text></view>
+        </view>
+        <view class="comment-input-bar {{showReplyInput ? 'reply-mode' : ''}}"><view class="input-wrap"><text class="reply-prefix" wx:if="{{showReplyInput}}">@{{replyToComment.nickname}}</text><input class="comment-input" placeholder="{{showReplyInput ? '' : '写下你的评论...'}}" value="{{commentText}}" bindinput="onCommentInput" placeholder-class="comment-placeholder" focus="{{showReplyInput}}" /></view><button class="send-btn {{commentText ? 'active' : ''}}" catchtap="submitComment">发送</button><button class="cancel-btn" wx:if="{{showReplyInput}}" catchtap="cancelReply">取消</button></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-page" wx:if="{{!loading && !trip}}"><text class="empty-icon">!</text><text>行程不存在</text></view>
+
+  <view class="guide-modal" wx:if="{{showGuideModal}}" catchtap="closeGuideModal">
+    <view class="guide-modal-content" catchtap=""><view class="guide-modal-header"><text class="guide-modal-title">编辑游玩推荐</text><view class="guide-modal-close" catchtap="closeGuideModal">×</view></view><view class="guide-modal-body"><text class="guide-modal-spot-name">{{editingSpot.name}}</text><textarea class="guide-modal-textarea" placeholder="分享你的游玩攻略、最佳路线、拍照点、注意事项等..." value="{{editingGuide}}" bindinput="onGuideInput" maxlength="500"></textarea><text class="guide-modal-counter">{{editingGuide.length}}/500</text></view><view class="guide-modal-footer"><button class="guide-modal-btn cancel" catchtap="closeGuideModal">取消</button><button class="guide-modal-btn confirm" catchtap="saveTravelGuide">保存</button></view></view>
+  </view>
+</view>

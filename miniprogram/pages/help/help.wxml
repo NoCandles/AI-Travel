@@ -1,0 +1,30 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="header">
+    <view class="header-left">
+      <text class="header-title">帮助与反馈</text>
+      <view class="header-indicator"></view>
+    </view>
+  </view>
+
+  <view class="faq-section">
+    <view class="faq-item" wx:for="{{faqList}}" wx:key="index" data-index="{{index}}" bindtap="toggleFaq">
+      <view class="faq-question">
+        <text class="faq-q-text">{{item.q}}</text>
+        <text class="faq-arrow {{expanded[index] ? 'arrow-up' : ''}}">▾</text>
+      </view>
+      <view class="faq-answer" wx:if="{{expanded[index]}}">
+        <text class="faq-a-text">{{item.a}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="contact-card">
+    <text class="contact-title">还没解决你的问题？</text>
+    <text class="contact-desc">通过以下方式联系我们，我们会尽快回复</text>
+    <view class="contact-row">
+      <image class="contact-icon" src="/images/icons/message-outline.svg" mode="aspectFit" />
+      <text class="contact-label">邮箱：</text>
+      <text class="contact-value selectable">1414324637@qq.com</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,41 @@
+<view class="wp-list">
+  <view
+    class="wp-item {{itemClasses[index] || ''}}"
+    wx:for="{{points}}"
+    wx:for-index="idx"
+    wx:key="index"
+    catchtap="onTapPoint"
+    data-index="{{idx}}"
+  >
+    <!-- 序号/图标 -->
+    <view class="wp-dot {{idx === 0 ? 'dot-start' : (idx === points.length - 1 ? 'dot-end' : 'dot-normal')}}">
+      <text wx:if="{{idx === 0}}">起</text>
+      <text wx:elif="{{idx === points.length - 1}}">终</text>
+      <text wx:else>{{idx}}</text>
+    </view>
+    <view class="wp-line" wx:if="{{idx < points.length - 1}}"></view>
+
+    <!-- 内容 -->
+    <view class="wp-content">
+      <view class="wp-name">{{item.name || item.title || '未命名'}}</view>
+      <view class="wp-meta">
+        <text wx:if="{{item.arrivalTime && idx > 0}}" class="wp-time">{{item.arrivalTime}}</text>
+        <text wx:elif="{{item.duration && idx > 0 && idx < points.length - 1}}" class="wp-duration">{{item.duration}}分钟</text>
+        <text wx:elif="{{idx === points.length - 1}}" class="wp-end-label">行程结束</text>
+        <text wx:if="{{item.address}}" class="wp-addr"> · {{item.address}}</text>
+      </view>
+    </view>
+
+    <!-- 拖拽/删除按钮（编辑模式） -->
+    <view class="wp-actions" wx:if="{{editMode}}">
+      <view class="wp-drag-btn up" wx:if="{{idx > 1 && idx < points.length - 1}}" catchtap="onMoveUp" data-index="{{idx}}">▲</view>
+      <view class="wp-drag-btn down" wx:if="{{idx < points.length - 1 && idx > 0}}" catchtap="onMoveDown" data-index="{{idx}}">▼</view>
+      <view class="wp-drag-btn del" wx:if="{{idx > 0 && idx < points.length - 1}}" catchtap="onRemove" data-index="{{idx}}">✕</view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="wp-empty" wx:if="{{points.length === 0}}">
+    <text>暂无途经点</text>
+  </view>
+</view>

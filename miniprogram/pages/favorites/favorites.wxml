@@ -1,0 +1,40 @@
+<import src="/templates/state-template.wxml"/>
+
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="header">
+    <view class="header-left">
+      <text class="header-title">我的收藏</text>
+      <view class="header-indicator"></view>
+    </view>
+  </view>
+
+  <template is="state-view" data="{{loading, empty, emptyText}}" />
+
+  <view class="fav-list" wx:if="{{!loading && favorites.length > 0}}">
+    <view class="trip-card" wx:for="{{favorites}}" wx:key="detailId" data-id="{{item.detailId}}" bindtap="viewDetail">
+      <image class="card-cover" src="{{item.coverImage || 'https://picsum.photos/id/1031/400/300'}}" mode="aspectFill"/>
+      <view class="card-body">
+          <text class="card-title">{{item.title}}</text>
+        <view class="card-meta">
+          <text class="card-location">{{item.location}}</text>
+          <text class="card-info">{{item.days}}天{{item.nights}}晚</text>
+        </view>
+        <view class="card-footer">
+          <view class="card-user">
+            <image class="card-avatar" src="{{item.avatar || '/images/icons/user.svg'}}" mode="aspectFill"/>
+            <text class="card-nickname">{{item.nickname || '旅行家'}}</text>
+          </view>
+          <view class="card-actions">
+            <view class="card-count">
+              <image class="card-count-icon" src="/images/icons/love-full.svg" mode="aspectFit" />
+              <text>{{item.likeCount || 0}}</text>
+            </view>
+            <button class="share-btn-pill" open-type="share" data-id="{{item.detailId}}" data-title="{{item.title || item.location}}" data-cover="{{item.coverImage}}">分享</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="loading-more" wx:if="{{loadingMore}}">加载更多...</view>
+  </view>
+</view>

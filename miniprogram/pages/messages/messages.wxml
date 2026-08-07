@@ -1,0 +1,91 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="header">
+    <view>
+      <text class="header-title">{{shareRouteId ? '发送路线' : '消息中心'}}</text>
+      <text class="header-subtitle">{{shareRouteId ? '选择一个聊天，把路线发过去' : '私信和互动都在这里'}}</text>
+    </view>
+    <view class="header-cancel" wx:if="{{shareRouteId}}" bindtap="cancelShareRoute">取消</view>
+  </view>
+
+  <view class="login-guide" wx:if="{{!isLoggedIn}}">
+    <image class="login-icon" src="/images/icons/message-outline.svg" mode="aspectFit" />
+    <text class="login-text">登录后查看消息</text>
+    <view class="login-btn" bindtap="goToLogin">去登录</view>
+  </view>
+
+  <view wx:if="{{isLoggedIn}}">
+    <view class="msg-tabs" wx:if="{{!shareRouteId}}">
+      <view class="msg-tab {{currentTab === 'chat' ? 'active' : ''}}" bindtap="switchTab" data-tab="chat">
+        <text>私信</text>
+        <text class="unread-count" wx:if="{{imUnreadCount > 0}}">{{imUnreadCount}}</text>
+      </view>
+      <view class="msg-tab {{currentTab === 'interaction' ? 'active' : ''}}" bindtap="switchTab" data-tab="interaction">
+        <text>互动</text>
+        <text class="unread-count" wx:if="{{unreadCount.interaction > 0}}">{{unreadCount.interaction}}</text>
+      </view>
+      <view class="msg-tab {{currentTab === 'system' ? 'active' : ''}}" bindtap="switchTab" data-tab="system">
+        <text>系统</text>
+        <text class="unread-count" wx:if="{{unreadCount.system > 0}}">{{unreadCount.system}}</text>
+      </view>
+    </view>
+
+    <view class="conversation-list" wx:if="{{currentTab === 'chat' || shareRouteId}}">
+      <view class="conversation-item" wx:for="{{conversations}}" wx:key="id" bindtap="openConversation" data-user-id="{{item.targetUserId}}">
+        <image class="conversation-avatar" src="{{item.targetAvatar || '/images/icons/user.svg'}}" mode="aspectFill" />
+        <view class="conversation-main">
+          <view class="conversation-head">
+            <text class="conversation-name">{{item.targetNickname || '旅行家'}}</text>
+            <text class="conversation-time">{{item.timeText}}</text>
+          </view>
+          <text class="conversation-preview">{{shareRouteId ? '发送这条路线给 TA' : (item.lastMessage || '开始聊天')}}</text>
+        </view>
+        <text class="conversation-badge" wx:if="{{!shareRouteId && item.unreadCount > 0}}">{{item.unreadCount}}</text>
+      </view>
+
+      <view class="empty-state" wx:if="{{conversations.length === 0 && !loading}}">
+        <image class="empty-icon-img" src="/images/icons/message-outline.svg" mode="aspectFit" />
+        <text class="empty-title">{{shareRouteId ? '还没有可发送的聊天' : '还没有私信'}}</text>
+        <text class="empty-subtitle">{{shareRouteId ? '去他人主页发起私信后，就能发送路线' : '去旅行家的主页发起一段聊天'}}</text>
+      </view>
+    </view>
+
+    <view class="msg-list" wx:if="{{currentTab !== 'chat' && !shareRouteId}}">
+      <view class="msg-item" wx:for="{{messages}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}" data-targetid="{{item.targetId}}" data-targettype="{{item.targetType}}" data-sender-id="{{item.senderId}}">
+        <view class="msg-avatar">
+          <image wx:if="{{item.senderAvatar}}" src="{{item.senderAvatar}}" mode="aspectFill" />
+          <image wx:else class="avatar-placeholder-img" src="{{item.type === 'system' ? '/images/icons/clipboard-list.svg' : '/images/icons/user.svg'}}" mode="aspectFit" />
+          <view class="msg-type-icon {{item.type}}">
+            <image wx:if="{{item.type === 'comment' || item.type === 'reply'}}" src="/images/icons/comment.svg" mode="aspectFit" />
+            <image wx:elif="{{item.type === 'like'}}" src="/images/icons/love-full.svg" mode="aspectFit" />
+            <image wx:elif="{{item.type === 'follow'}}" src="/images/icons/user.svg" mode="aspectFit" />
+            <image wx:else src="/images/icons/clipboard-list.svg" mode="aspectFit" />
+          </view>
+        </view>
+        <view class="msg-content">
+          <view class="msg-header">
+            <text class="msg-sender">{{item.senderName || '系统通知'}}</text>
+            <text class="msg-time">{{item.timeText}}</text>
+          </view>
+          <text class="msg-text">{{item.content}}</text>
+        </view>
+        <view class="unread-dot" wx:if="{{!item.isRead}}"></view>
+      </view>
+
+      <view class="empty-state" wx:if="{{messages.length === 0 && !loading}}">
+        <image class="empty-icon-img" src="/images/icons/clipboard-list.svg" mode="aspectFit" />
+        <text class="empty-title">暂无消息</text>
+        <text class="empty-subtitle">有新消息时会在这里提醒你</text>
+      </view>
+
+      <view class="msg-actions" wx:if="{{messages.length > 0}}">
+        <button class="btn-read-all" bindtap="readAll">全部已读</button>
+        <button class="btn-clear" bindtap="clearMessages">清空消息</button>
+      </view>
+    </view>
+
+    <view class="loading-state" wx:if="{{loading}}">
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+  <chat-fab />
+</view>

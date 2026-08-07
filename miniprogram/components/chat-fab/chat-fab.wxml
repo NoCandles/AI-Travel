@@ -1,0 +1,18 @@
+<!--
+  拾路派 - 全局AI助手悬浮按钮
+  初始固定右下角，可拖动，点击跳转聊天
+-->
+<movable-area wx:if="{{!hidden}}" class="fab-area" style="width:{{screenWidth}}px;height:{{screenHeight}}px;">
+  <movable-view class="fab-view"
+    direction="all"
+    x="{{x}}" y="{{y}}"
+    damping="3"
+    animation="{{animation}}"
+    out-of-bounds="{{false}}"
+    bindchange="onChange"
+    bindtouchstart="onTouchStart"
+    bindtouchend="onTouchEnd">
+    <image class="fab-btn" src="/images/小程序头像.png" mode="aspectFill"/>
+    <view class="fab-ripple"></view>
+  </movable-view>
+</movable-area>

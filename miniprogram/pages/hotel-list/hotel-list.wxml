@@ -1,0 +1,99 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-left">
+      <text class="header-title">附近酒店</text>
+      <text class="header-subtitle" wx:if="{{city}}">位于 · {{city}} 周边</text>
+    </view>
+  </view>
+
+  <!-- 搜索中 -->
+  <view class="loading-state" wx:if="{{loading && hotels.length === 0}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在搜索附近酒店...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-state" wx:elif="{{error && hotels.length === 0}}">
+    <image class="error-icon" src="/images/icons/info.svg" mode="aspectFill"/>
+    <text class="error-text">{{error}}</text>
+    <button class="btn-retry" bindtap="retry">重新搜索</button>
+  </view>
+
+  <!-- 酒店列表 -->
+  <view class="section" wx:elif="{{hotels.length > 0}}">
+    <view class="section-header">
+      <view class="section-title">
+        <image class="svg-icon" src="/images/icons/hotel.svg" mode="aspectFill"/>
+        <text>共找到 {{hotels.length}} 家酒店</text>
+      </view>
+    </view>
+
+    <view class="card-list">
+      <view
+        class="hotel-card {{selectedHotelId === item.id ? 'hotel-card-selected' : ''}}"
+        wx:for="{{hotels}}"
+        wx:key="id"
+      >
+        <!-- 左侧信息 -->
+        <view class="card-left">
+          <text class="card-name">{{item.title}}</text>
+
+          <view class="card-loc">
+            <image class="card-loc-icon" src="/images/icons/location-pin.svg"/>
+            <text>{{item.address || '暂无地址'}}</text>
+          </view>
+
+          <view class="card-meta-row">
+            <view class="card-distance" wx:if="{{item.distanceText}}">
+              <image class="meta-icon" src="/images/icons/location-pin.svg" mode="aspectFit" />
+              <text>{{item.distanceText}}</text>
+            </view>
+            <view class="card-tel" wx:if="{{item.tel}}" bindtap="callHotel" data-tel="{{item.tel}}">
+              <image class="meta-icon" src="/images/icons/info.svg" mode="aspectFit" />
+              <text>{{item.tel}}</text>
+            </view>
+          </view>
+
+          <view class="hotel-decision-hint" wx:if="{{item.decisionHint}}">
+            <text>选择参考：{{item.decisionHint}}</text>
+          </view>
+
+          <view class="card-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+            <text class="tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+
+        <!-- 右侧操作 -->
+        <view class="card-right">
+          <button class="btn-map" bindtap="viewOnMap" data-hotel="{{item}}">在地图中查看</button>
+          <button
+            class="btn-select {{selectedHotelId === item.id ? 'btn-selected' : ''}}"
+            bindtap="selectHotel"
+            data-hotel="{{item}}"
+          >{{selectedHotelId === item.id ? '已选 ✓' : '选择'}}</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{loading}}">
+      <text>加载更多...</text>
+    </view>
+    <view class="load-more" wx:elif="{{!hasMore && hotels.length >= 20}}">
+      <text>已显示全部酒店</text>
+    </view>
+  </view>
+
+  <!-- 空结果 -->
+  <view class="empty-state" wx:elif="{{!loading && !error && hotels.length === 0}}">
+    <image class="empty-icon" src="/images/icons/hotel.svg" mode="aspectFill"/>
+    <text class="empty-text">附近暂无找到酒店</text>
+    <text class="empty-hint">可尝试扩大搜索范围</text>
+    <button class="btn-retry" bindtap="retry">重新搜索</button>
+  </view>
+
+  <!-- 底部安全区 -->
+  <view class="safe-bottom"></view>
+</view>

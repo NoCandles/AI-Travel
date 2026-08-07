@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "route-stats-card": "/components/route-stats-card/route-stats-card",
+    "waypoint-timeline": "/components/waypoint-timeline/waypoint-timeline",
+    "path-picker": "/components/path-picker/path-picker"
+  },
+  "navigationBarTitleText": "行程地图"
+}

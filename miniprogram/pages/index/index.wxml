@@ -1,0 +1,230 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- 头部 -->
+  <view class="header">
+    <view class="xhs-topbar">
+      <scroll-view wx:if="{{!showSearchBar}}" class="xhs-tabs-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="xhs-tabs">
+          <view
+            class="xhs-tab {{currentCategory == item.key ? 'active' : ''}}"
+            wx:for="{{categoryTabs}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="onCategoryTabTap"
+          >{{item.label}}</view>
+          <view class="xhs-tab city {{selectedCityNames.length > 0 ? 'active' : ''}}" bindtap="openCityPopup">
+            <text>{{selectedCityNames.length > 0 ? selectedCityNames[0] : (currentLocation ? currentLocation.name : '全城')}}</text>
+            <image class="xhs-category-arrow" src="/images/icons/arrow-down.svg" mode="aspectFit"/>
+          </view>
+          <picker mode="selector" range="{{daysOptions}}" range-key="label" value="{{daysIndex}}" bindchange="onDaysChange">
+            <view class="xhs-tab picker {{daysOptions[daysIndex].value > 0 ? 'active' : ''}}">
+              <text>{{daysOptions[daysIndex].value == 0 ? '天数' : daysOptions[daysIndex].label}}</text>
+            </view>
+          </picker>
+          <view
+            class="xhs-tag {{selectedTag == item.name ? 'active' : ''}}"
+            wx:for="{{hotTags}}"
+            wx:key="name"
+            data-tag="{{item.name}}"
+            bindtap="onTagTap"
+          >{{item.name}}</view>
+        </view>
+      </scroll-view>
+      <view wx:else class="xhs-search-row">
+        <input
+          class="xhs-search-input"
+          value="{{keyword}}"
+          placeholder="搜索城市、路线、标签"
+          confirm-type="search"
+          focus="{{showSearchBar}}"
+          bindinput="onKeywordInput"
+          bindconfirm="onSearch"
+        />
+        <view class="xhs-search-cancel" bindtap="clearSearch">取消</view>
+      </view>
+      <view class="xhs-side-btn search" bindtap="toggleSearchBar">
+        <image class="xhs-side-icon" src="/images/icons/search.svg" mode="aspectFit"/>
+      </view>
+    </view>
+
+  </view>
+
+  <view class="waterfall-wrap">
+    <view class="waterfall-col">
+      <view class="trip-card" wx:for="{{leftTrips}}" wx:key="id" data-id="{{item.id}}" bindtap="viewTripDetail">
+        <!-- 封面图 -->
+        <view class="card-cover-wrap">
+          <view class="card-days-badge">{{item.days}}天{{item.nights}}晚</view>
+          <image class="card-cover" src="{{item.coverImage}}" mode="widthFix"/>
+        </view>
+
+        <!-- 卡片内容 -->
+        <view class="card-content">
+          <view class="card-info">
+            <text class="card-title">{{item.title}}</text>
+          </view>
+
+          <view class="card-bottom">
+            <view class="card-user">
+              <image class="card-avatar-mini" src="{{item.avatar || '/images/icons/user.svg'}}" mode="aspectFill"/>
+              <text class="card-username">{{item.nickname || '旅行家'}}</text>
+            </view>
+            <view class="card-like">
+              <image class="card-like-icon" src="/images/icons/heart.svg" mode="aspectFit"/>
+              <text>{{item.likeCount}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="waterfall-col">
+      <view class="trip-card" wx:for="{{rightTrips}}" wx:key="id" data-id="{{item.id}}" bindtap="viewTripDetail">
+        <view class="card-cover-wrap">
+          <view class="card-days-badge">{{item.days}}天{{item.nights}}晚</view>
+          <image class="card-cover" src="{{item.coverImage}}" mode="widthFix"/>
+        </view>
+
+        <view class="card-content">
+          <view class="card-info">
+            <text class="card-title">{{item.title}}</text>
+          </view>
+
+          <view class="card-bottom">
+            <view class="card-user">
+              <image class="card-avatar-mini" src="{{item.avatar || '/images/icons/user.svg'}}" mode="aspectFill"/>
+              <text class="card-username">{{item.nickname || '旅行家'}}</text>
+            </view>
+            <view class="card-like">
+              <image class="card-like-icon" src="/images/icons/heart.svg" mode="aspectFit"/>
+              <text>{{item.likeCount}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{trips.length === 0 && !loading}}">
+    <view class="empty-icon-wrap">
+      <image class="empty-icon" src="/images/icons/scenic.svg" mode="aspectFit"/>
+    </view>
+    <text class="empty-text">暂无行程数据</text>
+    <text class="empty-desc">发布第一个行程，分享你的旅途吧</text>
+    <view class="empty-action" bindtap="publishTrip">去规划路线</view>
+  </view>
+
+  <!-- 底部安全区 -->
+  <view class="safe-bottom"></view>
+</view>
+
+<!-- ==================== AI助手悬浮按钮 ==================== -->
+<chat-fab hidden="{{showCityPopup}}" />
+
+<!-- ==================== 城市选择底部弹窗 ==================== -->
+<view class="city-popup-mask {{showCityPopup ? 'show' : ''}}" bindtap="closeCityPopup"></view>
+<view class="city-popup {{showCityPopup ? 'show' : ''}}">
+  <!-- 弹窗头部 -->
+  <view class="city-popup-header">
+    <text class="city-popup-title">选择城市</text>
+    <view class="city-popup-close" bindtap="closeCityPopup">
+      <image class="popup-close-icon" src="/images/icons/close.svg" mode="aspectFit"/>
+    </view>
+  </view>
+
+  <!-- 弹窗内容 -->
+  <scroll-view class="city-popup-body" scroll-y enhanced show-scrollbar="{{false}}" scroll-into-view="{{alphabetScrollToId}}">
+    <!-- 当前定位 -->
+    <view class="city-section" wx:if="{{currentLocation}}">
+      <view class="city-section-title">当前定位</view>
+      <view class="city-tag location-tag" bindtap="selectCurrentLocation">
+        <image class="city-tag-icon" src="/images/icons/location-pin.svg" mode="aspectFit"/>
+        <text class="city-tag-name">{{currentLocation.name}}</text>
+      </view>
+    </view>
+
+    <!-- 已选城市标签 -->
+    <view class="city-section" wx:if="{{selectedCities.length > 0}}">
+      <view class="city-section-title">已选择（{{selectedCities.length}}）</view>
+      <view class="city-tags-wrap">
+        <view class="city-tag selected-tag" wx:for="{{selectedCities}}" wx:key="id" data-city="{{item}}" bindtap="toggleCity">
+          <text class="city-tag-name">{{item.name}}</text>
+          <image class="city-tag-remove-icon" src="/images/icons/close.svg" mode="aspectFit"/>
+        </view>
+      </view>
+    </view>
+
+    <!-- 热门城市 -->
+    <view class="city-section" wx:if="{{cityData && cityData.hotCities.length > 0}}">
+      <view class="city-section-title">热门城市</view>
+      <view class="city-hot-grid">
+        <view
+          class="city-tag hot-tag {{selectedCityIds.indexOf(item.id) >= 0 ? 'active' : ''}}"
+          wx:for="{{cityData.hotCities}}"
+          wx:key="id"
+          wx:for-item="item"
+          data-city="{{item}}"
+          bindtap="toggleCity"
+        >
+          <text class="city-tag-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- A-Z 分组城市列表 -->
+    <block wx:if="{{cityData && cityData.groupCities.length > 0}}">
+      <view class="city-section" wx:for="{{cityData.groupCities}}" wx:key="letter" wx:for-item="group">
+        <!-- 字母标题 -->
+        <view class="city-letter-header" id="letter-{{group.letter}}">{{group.letter}}</view>
+
+        <!-- 城市列表 -->
+        <view class="city-list-row">
+          <view
+            class="city-tag list-tag {{selectedCityIds.indexOf(item.id) >= 0 ? 'active' : ''}}"
+            wx:for="{{group.cities}}"
+            wx:key="id"
+            wx:for-item="item"
+            data-city="{{item}}"
+            bindtap="toggleCity"
+          >
+            <text class="city-tag-name">{{item.name}}</text>
+            <image class="city-tag-check-icon" wx:if="{{selectedCityIds.indexOf(item.id) >= 0}}" src="/images/icons/check.svg" mode="aspectFit"/>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 加载中 -->
+    <view class="city-loading" wx:if="{{!cityData}}">
+      <text>加载城市数据中...</text>
+    </view>
+
+    <!-- 底部留白 -->
+    <view style="height: 120rpx;"></view>
+  </scroll-view>
+
+  <!-- 字母索引导航 -->
+  <view class="alphabet-index" wx:if="{{cityData && cityData.groupCities.length > 0}}">
+    <view
+      class="alphabet-item"
+      wx:for="{{alphabetList}}"
+      wx:key="*this"
+      data-letter="{{item}}"
+      bindtap="onAlphabetTap"
+    >{{item}}</view>
+  </view>
+
+  <!-- 弹窗底部操作栏 -->
+  <view class="city-popup-footer">
+    <view class="city-footer-left" bindtap="clearCitySelection">
+      <text>清除</text>
+    </view>
+    <view class="city-footer-right" bindtap="confirmCitySelection">
+      <text>确认</text>
+    </view>
+  </view>
+
+</view>
+
+

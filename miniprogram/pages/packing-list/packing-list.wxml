@@ -1,0 +1,101 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <!-- 头部进度 -->
+  <view class="header-card">
+    <view class="header-top">
+      <view class="header-title-row">
+        <image class="header-title-icon" src="/images/icons/clipboard-list.svg" mode="aspectFit" />
+        <text class="header-title">行李清单</text>
+      </view>
+      <text class="header-dest">{{destination || '通用清单'}}</text>
+    </view>
+    <view class="progress-bar-wrap">
+      <view class="progress-bar" style="width: {{progress.total > 0 ? (progress.checked / progress.total * 100) : 0}}%"></view>
+    </view>
+    <view class="progress-text">{{progress.checked}}/{{progress.total}} 已打包</view>
+  </view>
+
+  <!-- 加载 -->
+  <view class="loading-box" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">AI 生成行李清单中...</text>
+  </view>
+
+  <!-- 清单列表 -->
+  <view class="list" wx:if="{{!loading}}">
+    <view class="category" wx:for="{{categories}}" wx:key="name" wx:for-index="catIdx" wx:for-item="cat">
+      <view class="cat-header">
+        <text class="cat-name">{{cat.name}}</text>
+        <text class="cat-count">{{cat.checkedCount}}/{{cat.items.length}}</text>
+      </view>
+      <view
+        class="packing-entry {{it.checked ? 'packing-entry--checked' : ''}}"
+        wx:for="{{cat.items}}"
+        wx:key="name"
+        wx:for-index="itemIdx"
+        wx:for-item="it"
+        data-cat-idx="{{catIdx}}"
+        data-item-idx="{{itemIdx}}"
+        bindtap="{{canEdit ? 'toggleItem' : ''}}"
+      >
+        <view class="packing-entry__checkbox {{it.checked ? 'checkbox-on' : 'checkbox-off'}}">
+          <text class="packing-entry__tick" wx:if="{{it.checked}}">✓</text>
+        </view>
+        <view class="packing-entry__body">
+          <view class="packing-entry__row1">
+            <text class="packing-entry__name {{it.checked ? 'packing-entry__name--done' : ''}}">{{it.name}}</text>
+            <view class="packing-entry__actions">
+              <view class="packing-entry__qty" wx:if="{{it.quantity > 1}}">
+                <text class="packing-entry__qty-text">×{{it.quantity}}</text>
+              </view>
+              <view class="packing-entry__edit" wx:if="{{canEdit}}" catchtap="editItem" data-cat-idx="{{catIdx}}" data-item-idx="{{itemIdx}}"><image src="/images/icons/edit.svg" mode="aspectFit" /></view>
+              <view class="packing-entry__delete" wx:if="{{canEdit}}" catchtap="deleteItem" data-cat-idx="{{catIdx}}" data-item-idx="{{itemIdx}}"><image src="/images/icons/delete.svg" mode="aspectFit" /></view>
+            </view>
+          </view>
+          <text class="packing-entry__note" wx:if="{{it.note}}">{{it.note}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="bottom-bar">
+    <button class="btn-reset" wx:if="{{canEdit}}" bindtap="resetAll">重置勾选</button>
+    <button class="btn-add" wx:if="{{canEdit}}" bindtap="showAddModal">+ 新增物品</button>
+    <button class="btn-regenerate" wx:if="{{canEdit && tripId}}" bindtap="regeneratePackingList">⟳ 重新生成</button>
+    <button class="btn-back" bindtap="goBack">完成</button>
+  </view>
+
+  <!-- 编辑/新增弹窗 -->
+  <view class="modal-mask" wx:if="{{showModal}}" bindtap="hideModal">
+    <view class="modal-body" catchtap="stopPropagation">
+      <view class="modal-title">{{modalType === 'add' ? '新增物品' : '编辑物品'}}</view>
+      
+      <view class="modal-field">
+        <text class="modal-label">分类</text>
+        <picker mode="selector" range="{{categories}}" range-key="name" value="{{modalCatIdx}}" bindchange="onCatChange">
+          <view class="modal-picker">{{categories[modalCatIdx].name || '请选择'}}</view>
+        </picker>
+      </view>
+
+      <view class="modal-field">
+        <text class="modal-label">物品名称</text>
+        <input class="modal-input" placeholder="请输入物品名称" value="{{modalName}}" bindinput="onNameInput"/>
+      </view>
+
+      <view class="modal-field">
+        <text class="modal-label">数量</text>
+        <input class="modal-input" type="number" placeholder="数量" value="{{modalQty}}" bindinput="onQtyInput"/>
+      </view>
+
+      <view class="modal-field">
+        <text class="modal-label">备注</text>
+        <input class="modal-input" placeholder="选填，如：防晒SPF50+" value="{{modalNote}}" bindinput="onNoteInput"/>
+      </view>
+
+      <view class="modal-buttons">
+        <button class="modal-btn modal-btn--cancel" bindtap="hideModal">取消</button>
+        <button class="modal-btn modal-btn--confirm" bindtap="saveModal">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

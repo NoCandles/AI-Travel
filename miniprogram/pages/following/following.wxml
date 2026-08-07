@@ -1,0 +1,39 @@
+<import src="/templates/state-template.wxml"/>
+
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+  <view class="header">
+    <view class="header-left">
+      <text class="header-title">{{pageTitle}}</text>
+      <view class="header-indicator"></view>
+    </view>
+  </view>
+
+  <template is="state-view" data="{{loading, empty, emptyText}}" />
+  <view class="empty-action" wx:if="{{!loading && empty}}" bindtap="goToSquare">去发现</view>
+
+  <view class="following-list" wx:if="{{!loading && followingList.length > 0}}">
+    <view class="user-card" wx:for="{{followingList}}" wx:key="id" bindtap="viewUserProfile" data-id="{{item.id}}">
+      <view class="user-left">
+        <image class="user-avatar" src="{{item.avatar || '/images/icons/user.svg'}}" mode="aspectFill"/>
+        <view class="user-info">
+          <text class="user-name">{{item.nickname || item.name || '未知用户'}}</text>
+          <text class="user-bio">{{item.signature || '还没有填写个人简介'}}</text>
+          <view class="user-meta">
+            <text class="meta-item">关注 {{item.followerCount || 0}}</text>
+            <text class="meta-divider">·</text>
+            <text class="meta-item">行程 {{item.tripCount || 0}}</text>
+          </view>
+        </view>
+      </view>
+      <button
+        class="btn-follow {{item.followed ? 'followed' : ''}}"
+        wx:if="{{item.id !== selfUserId}}"
+        catchtap="toggleFollow"
+        data-id="{{item.id}}"
+        data-followed="{{item.followed}}"
+      >{{item.followed ? '已关注' : '关注'}}</button>
+    </view>
+
+    <view class="loading-more" wx:if="{{loadingMore}}">加载更多...</view>
+  </view>
+</view>

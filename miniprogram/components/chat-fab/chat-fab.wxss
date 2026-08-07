@@ -1,0 +1,55 @@
+/* 拾路派 - 全局AI助手悬浮按钮 */
+
+.fab-area {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.fab-view {
+  width: 112rpx;
+  height: 112rpx;
+  pointer-events: auto;
+}
+
+.fab-btn {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  box-shadow: 0 8rpx 28rpx var(--color-brand-glow), 0 4rpx 12rpx rgba(0,0,0,0.1);
+}
+
+.fab-btn:active {
+  transform: scale(0.9);
+}
+
+/* 呼吸波纹 */
+.fab-ripple {
+  position: absolute;
+  inset: -6rpx;
+  border-radius: 50%;
+  border: 3rpx solid var(--color-brand);
+  opacity: 0;
+  animation: fabRipple 2.5s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fabRipple {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* 深色模式 */
+.theme-dark .fab-btn {
+  box-shadow: 0 8rpx 28rpx rgba(46,196,182,0.35), 0 4rpx 12rpx rgba(0,0,0,0.2);
+}

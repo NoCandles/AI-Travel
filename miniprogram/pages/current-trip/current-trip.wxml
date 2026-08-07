@@ -1,0 +1,261 @@
+<view class="page {{darkMode ? 'theme-dark' : ''}}">
+
+  <!-- ===== 导航栏 ===== -->
+  <view class="nav">
+    <view class="nav-inner" style="padding-top: {{navPaddingTop || 44}}px;">
+      <button class="nav-left app-nav-back" bindtap="goBack" aria-label="返回">
+        <image class="app-nav-back-icon" src="/images/icons/arrow-left.svg" mode="aspectFit"/>
+      </button>
+      <view class="nav-center" wx:if="{{trip}}">
+        <text class="nav-title">{{trip.name || trip.destination + '之旅'}}</text>
+        <view class="nav-badge">进行中</view>
+      </view>
+      <view class="nav-right"></view>
+    </view>
+  </view>
+
+  <!-- ===== 主体 ===== -->
+  <view class="body" wx:if="{{!isLoading && trip}}">
+    <view class="offline-notice" wx:if="{{offlineMode}}">当前为离线缓存行程，联网后会自动恢复最新数据。</view>
+
+    <!-- ============ 地图区域 ============ -->
+    <view class="map-area">
+      <map
+        id="trip-map"
+        class="map-widget"
+        longitude="{{mapData.longitude}}"
+        latitude="{{mapData.latitude}}"
+        scale="{{mapData.scale}}"
+        markers="{{markers}}"
+        polyline="{{polylines}}"
+        show-location="{{true}}"
+        enable-traffic="{{false}}"
+        bindmarkertap="onMarkerTap"
+      >
+        <!-- 地点浮层 -->
+        <cover-view class="map-overlay-top">
+          <cover-view class="map-location">
+            <cover-image class="map-location-icon" src="/images/icons/location.svg"></cover-image>
+            <cover-view class="map-location-text">{{currentLocation || trip.destination}}</cover-view>
+          </cover-view>
+        </cover-view>
+
+        <!-- 天气 -->
+        <cover-view class="map-weather" wx:if="{{weather.temp !== null}}">
+          <cover-view class="map-weather-val">
+            <cover-image class="map-weather-icon" src="{{weather.iconPath || '/images/icons/scenic.svg'}}"></cover-image>
+            <cover-view>{{weather.temp}}°</cover-view>
+          </cover-view>
+          <cover-view class="map-weather-desc">{{weather.desc}}</cover-view>
+        </cover-view>
+
+        <!-- 路线统计 -->
+        <cover-view class="map-stats" wx:if="{{routeLoaded || routeStats.distance > 0}}" bindtap="togglePathPicker">
+          <cover-view class="map-stats-dist">{{routeStats.distance}} km</cover-view>
+          <cover-view class="map-stats-dot"></cover-view>
+          <cover-view class="map-stats-dur">{{routeStats.duration}}</cover-view>
+        </cover-view>
+
+        <!-- 加载 -->
+        <cover-view class="map-loader" wx:if="{{loadingRoute}}">
+          <cover-view class="map-loader-dot"></cover-view>
+          <cover-view class="map-loader-dot"></cover-view>
+          <cover-view class="map-loader-dot"></cover-view>
+        </cover-view>
+      </map>
+
+      <view class="travel-mode-readonly"><image class="travel-item-icon" src="{{travelModeMeta.iconPath}}" mode="aspectFit" /><text>{{travelModeMeta.label}}路线</text><text class="travel-mode-hint">已按行程识别</text></view>
+    </view>
+
+    <!-- ============ 进度航点 ============ -->
+    <view class="progress">
+      <view class="progress-header">
+        <text class="progress-day">第 {{currentDay}} 天</text>
+        <text class="progress-total">共 {{totalDays}} 天 · {{completedSpotsAll}}/{{totalSpotsAll}} 景点</text>
+      </view>
+      <view class="progress-bar-wrap">
+        <view class="progress-bar-bg">
+          <view class="progress-bar-fill" style="width: {{overallProgress}}%"></view>
+        </view>
+        <view class="progress-nodes">
+          <view class="progress-node {{index < completedDays ? 'node-done' : (index === completedDays ? 'node-active' : 'node-todo')}}"
+                wx:for="{{totalDays}}" wx:key="*this"
+                data-day="{{index + 1}}" bindtap="switchDay">
+            <text class="node-num" wx:if="{{index < completedDays}}">✓</text>
+            <text class="node-num" wx:elif="{{index === completedDays}}">{{index + 1}}</text>
+            <text class="node-num" wx:else>{{index + 1}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ============ 提醒条 ============ -->
+    <scroll-view class="alerts" scroll-x enhanced show-scrollbar="{{false}}" wx:if="{{alerts.length > 0}}">
+      <view class="alert-item {{item.severity}}" wx:for="{{alerts}}" wx:key="index">
+        <image class="alert-icon" src="{{item.iconPath}}" mode="aspectFit" />
+        <text class="alert-title">{{item.title}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- ============ 时间线 ============ -->
+    <view class="timeline-section">
+      <scroll-view class="timeline-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+        <view class="timeline-inner">
+
+        <!-- 已到达 -->
+        <view class="tl-group" wx:if="{{visitedSpots.length > 0}}">
+          <view class="tl-group-header">
+            <view class="tl-group-bar"></view>
+            <text class="tl-group-title">已到达</text>
+            <view class="tl-group-bar"></view>
+          </view>
+          <view class="tl-row" wx:for="{{visitedSpots}}" wx:key="id">
+            <view class="tl-dot tl-done">
+              <image class="tl-dot-icon" src="/images/icons/check.svg" mode="aspectFit"/>
+            </view>
+            <view class="tl-card">
+              <view class="tl-card-top">
+                <text class="tl-time">{{item.arrivalTime || '--:--'}}</text>
+                <view class="tl-card-right">
+                  <text class="tl-badge badge-done">已到达</text>
+                </view>
+              </view>
+              <text class="tl-name">{{item.name}}</text>
+              <text class="tl-location" wx:if="{{item.address}}" catchtap="openLocation" data-lat="{{item.latitude}}" data-lng="{{item.longitude}}" data-name="{{item.name}}" data-address="{{item.address}}">{{item.address}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 当前 -->
+        <view class="tl-group" wx:if="{{currentSpot.length > 0}}">
+    
+          <view class="tl-row" wx:for="{{currentSpot}}" wx:key="id">
+            <view class="tl-dot tl-current">
+              <view class="tl-current-pulse"></view>
+            </view>
+            <view class="tl-card tl-card-current">
+              <view class="tl-card-top">
+                <text class="tl-time tl-time-current">{{item.arrivalTime || '--:--'}}</text>
+                <view class="tl-card-right">
+                  <text class="tl-badge badge-current">当前</text>
+                </view>
+              </view>
+              <view class="tl-card-body">
+                <text class="tl-name tl-name-current">{{item.name}}</text>
+                <view class="tl-card-meta" wx:if="{{item.weather || item.temperature}}">
+                  <image class="tl-weather-icon" wx:if="{{item.weatherIconPath}}" src="{{item.weatherIconPath}}" mode="aspectFit" />
+                  <text class="tl-weather tl-weather-{{item.weatherType}}">{{item.weather || ''}} {{item.temperature || ''}}</text>
+                </view>
+                <text class="tl-location" wx:if="{{item.address}}" catchtap="openLocation" data-lat="{{item.latitude}}" data-lng="{{item.longitude}}" data-name="{{item.name}}" data-address="{{item.address}}">{{item.address}}</text>
+              </view>
+              <view class="tl-card-action">
+                <button class="tl-checkin" catchtap="checkInCurrentSpot">
+                  <image class="tl-checkin-icon" src="/images/icons/check.svg" mode="aspectFit"/>
+                  <text>打卡到达</text>
+                </button>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 待出发 -->
+        <view class="tl-group" wx:if="{{upcomingSpots.length > 0}}">
+          <view class="tl-group-header">
+            <view class="tl-group-bar"></view>
+            <text class="tl-group-title">接下来</text>
+            <view class="tl-group-bar"></view>
+          </view>
+          <view class="tl-row" wx:for="{{upcomingSpots}}" wx:key="id">
+            <view class="tl-dot tl-todo">
+              <view class="tl-dot-num">{{index + 1 + visitedSpots.length + currentSpot.length}}</view>
+            </view>
+            <view class="tl-card">
+              <view class="tl-card-top">
+                <text class="tl-time">{{item.arrivalTime || '--:--'}}</text>
+                <view class="tl-card-right">
+                  <view class="tl-weather-wrap" wx:if="{{item.weather || item.temperature}}">
+                    <image class="tl-weather-icon" wx:if="{{item.weatherIconPath}}" src="{{item.weatherIconPath}}" mode="aspectFit" />
+                    <text class="tl-weather tl-weather-{{item.weatherType}}">{{item.weather || ''}} {{item.temperature || ''}}</text>
+                  </view>
+                  <text class="tl-badge badge-todo">待出发</text>
+                </view>
+              </view>
+              <text class="tl-name">{{item.name}}</text>
+              <text class="tl-location" wx:if="{{item.address}}" catchtap="openLocation" data-lat="{{item.latitude}}" data-lng="{{item.longitude}}" data-name="{{item.name}}" data-address="{{item.address}}">{{item.address}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 住宿 -->
+        <view class="tl-row" wx:if="{{currentDayHotel}}">
+          <view class="tl-dot tl-hotel"><image class="tl-dot-icon" src="/images/icons/hotel.svg" mode="aspectFit"/></view>
+          <view class="tl-card tl-card-hotel">
+            <text class="tl-badge badge-hotel">今晚住这里</text>
+            <text class="tl-name">{{currentDayHotel.name}}</text>
+            <text class="tl-location" catchtap="openLocation" data-lat="{{currentDayHotel.latitude || ''}}" data-lng="{{currentDayHotel.longitude || ''}}" data-name="{{currentDayHotel.name}}" data-address="{{currentDayHotel.address || currentDayHotel.detail || ''}}">{{currentDayHotel.address || currentDayHotel.detail || ''}}</text>
+          </view>
+        </view>
+
+        <view class="tl-spacer"></view>
+        </view>
+      </scroll-view>
+    </view>
+
+  </view>
+
+  <!-- ============ 底部导航浮层 ============ -->
+  <view class="dock" wx:if="{{trip && !isLoading}}">
+
+    <!-- 当天已完成 → 切天/结束 -->
+    <button class="dock-btn dock-primary" bindtap="goToNextDay" wx:if="{{isDayComplete}}">
+      <image class="dock-btn-icon" src="/images/icons/check.svg" mode="aspectFit"/>
+      <text wx:if="{{isLastDay}}">结束行程</text>
+      <text wx:else>切换到下一天</text>
+    </button>
+
+    <!-- 当天未完成 → 导航 -->
+    <button class="dock-btn dock-primary" bindtap="goToNavigation"
+            wx:elif="{{routeStats.points && routeStats.points.length >= 2}}">
+      <image class="dock-btn-icon" src="/images/icons/nav.svg" mode="aspectFit"/>
+      <text>导航到下一站</text>
+    </button>
+
+    <view class="dock-more" bindtap="goToTripDetail">
+      <image class="dock-more-icon" src="/images/icons/star.svg" mode="aspectFit"/>
+    </view>
+  </view>
+
+  <!-- ============ 加载 / 空 ============ -->
+  <view class="state-full" wx:if="{{isLoading}}">
+    <view class="state-spinner"></view>
+    <text class="state-hint">加载当前行程...</text>
+  </view>
+
+  <view class="state-full" wx:if="{{!isLoading && !trip}}">
+    <image class="state-icon-img" src="/images/icons/map-icon.svg" mode="aspectFit" />
+    <text class="state-label">暂无进行中的行程</text>
+    <text class="state-tip">在"我的行程"中点"出发"开始旅程</text>
+    <button class="state-btn" bindtap="goToMyTrips">查看我的行程</button>
+  </view>
+
+  <!-- ============ 弹窗 ============ -->
+  <path-picker
+    visible="{{showPathPicker && totalPaths > 1}}"
+    paths="{{allPaths}}"
+    currentIndex="{{currentPathIndex}}"
+    bind:close="togglePathPicker"
+    bind:select="switchPath"
+  />
+
+  <view class="modal-wrap {{showEndModal ? 'modal-open' : ''}}" catchtap="hideEndModal">
+    <view class="modal-box" catchtap="noop">
+      <text class="modal-title">结束旅程？</text>
+      <text class="modal-desc">行程将标记为已完成，所有记录会被保存</text>
+      <view class="modal-actions">
+        <button class="modal-cancel" bindtap="hideEndModal">再玩会儿</button>
+        <button class="modal-confirm" bindtap="confirmEndTrip">确认结束</button>
+      </view>
+    </view>
+  </view>
+
+</view>

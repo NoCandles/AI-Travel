@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "chat-fab": "/components/chat-fab/chat-fab"
+  },
+  "navigationBarTitleText": "我的"
+}

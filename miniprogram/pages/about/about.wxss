@@ -1,0 +1,102 @@
+/* ========================================
+   关于页 — 所有 Token 由 variables.wxss 统一提供
+   ======================================== */
+
+.page {
+  padding: 0 var(--space-page-x);
+  min-height: 100vh;
+  background: var(--color-surface-alt);
+  box-sizing: border-box;
+}
+
+/* ---- 深色模式页面背景（强制覆盖，规避跨页面 CSS 变量级联不可靠） ---- */
+.theme-dark.page,
+.page.theme-dark {
+  background: #111318;
+  color: var(--color-text);
+}
+
+/* ---- Header ---- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32rpx;
+}
+.header-left { flex: 1; }
+.header-title {
+  font-size: 64rpx;
+  font-weight: 800;
+  color: var(--color-dark);
+  margin-bottom: 16rpx;
+}
+.header-indicator {
+  width: 72rpx;
+  height: 6rpx;
+  background: var(--color-primary);
+  border-radius: 4rpx;
+}
+
+/* ---- Logo 区域 ---- */
+.about-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48rpx 0;
+  margin-bottom: 32rpx;
+}
+.app-logo {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 36rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 32rpx var(--color-brand-30);
+}
+.logo-image {
+  width: 100%;
+  height: 100%;
+}
+.app-name {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--color-dark);
+  margin-bottom: 8rpx;
+}
+.app-version {
+  font-size: 24rpx;
+  color: var(--color-muted);
+  margin-bottom: 24rpx;
+}
+.app-desc {
+  font-size: 24rpx;
+  color: var(--color-muted);
+  text-align: center;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+/* ---- 信息卡片 ---- */
+.info-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-card);
+  padding: 28rpx 24rpx;
+  border-radius: 16rpx;
+  margin-bottom: 2rpx;
+  box-shadow: 0 1rpx 4rpx rgba(0,0,0,0.04);
+}
+.info-label {
+  font-size: 24rpx;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+.info-value {
+  font-size: 24rpx;
+  color: var(--color-dark);
+  font-weight: 600;
+}
+
+/* ---- 暗色模式（仅页面特有覆盖） ---- */
+.theme-dark .info-card { border: 1rpx solid var(--color-border); }

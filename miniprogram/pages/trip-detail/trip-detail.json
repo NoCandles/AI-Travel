@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "行程详情",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "path-picker": "/components/path-picker/path-picker"
+  }
+}
